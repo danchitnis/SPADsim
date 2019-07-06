@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SPAD Simulation</title>
+        
+        <script aysnc src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+        <script async src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
+        <link async rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
+    
+        <script async src="gr-latest.js"></script>
+  </head>
+  
+  <body>
+        <div>
+            <h1>SPAD Simulation</h1>
+            <h2>by Danial Chitnis</h2>
+            <canvas id="display" class="display"></canvas>
+            <div id="slider"></div>
+            <p id="range_value" class="range">123</p>
+            <button class="bt" onclick="generate_new()">Generate New!</button>
+        </div>
+        <script src="script.js"></script>
+
+        <style>
+            body {
+                background: #2b2b2b;
+                height: 100vh;
+                margin: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            }
+            
+            h1, h2 {
+                color: #bdbdbd;
+                font-weight: 300;
+            }
+            
+            .range {
+                color: white;
+            }
+            
+            .display {
+                max-width: 90%;
+                padding-top: 20px;
+                padding-bottom: 20px;
+            }
+
+            .bt {
+                background-color: transparent;
+                border: 2px solid rgb(76, 111, 175);
+                color: white;
+                padding: 15px 32px;
+                text-align: center;
+                text-decoration: none;
+                display: inline-block;
+                font-size: 1em;
+                border-radius: 30px;
+                cursor: pointer;
+                transition-duration: 0.1s;
+            }
+
+            .bt:hover {
+                background-color: rgb(58, 100, 179);
+                border-color:  rgb(58, 100, 179);
+            }
+        </style>
+
+
+  </body>
+</html>
+    
+
+
+
