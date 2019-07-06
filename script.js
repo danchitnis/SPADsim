@@ -15,6 +15,8 @@ console.log(y);
 
 
 
+///// functions
+
 function spad(t, tr) {
     //
     let u=nj.random(phrate*3);
@@ -54,10 +56,14 @@ function spad(t, tr) {
 
 
 
-///// functions
-
-function apply_ystep(y, i, c) {
-    y.set(i,0.5);
+function apply_ystep(y, i, ystep) {
+    if (y.get(i-1) > 0) {
+        let a = y.get(i-1) - ystep;
+        y.set(i, a);
+    }
+    else {
+        y.set(i,0);
+    }
 }
 
 function cumsum(array) {
