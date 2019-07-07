@@ -9,6 +9,8 @@
         <script aysnc src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
         <script async src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
         <link async rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
+
+        <script async src="https://kit.fontawesome.com/72b06963cb.js"></script>
     
         
   </head>
@@ -20,7 +22,22 @@
             <canvas id="display" class="display"></canvas>
             <div id="slider"></div>
             <p id="range_value" class="range">123</p>
-            <button class="bt" onclick="generate_new()">Generate New!</button>
+            
+            <div class="play">
+                <button class="bt" onclick="ctrl_play()"><i class="fas fa-play"></i></button>
+                <button class="bt" onclick="ctrl_pause()"><i class="fas fa-pause"></i></button>
+                <button class="bt" onclick="ctrl_step()"><i class="fas fa-step-forward"></i></button>
+
+                <style>
+                    .play {
+                        display: flex;
+                    }
+                    .play > button {
+                        margin-right: 1em;
+                    }
+                </style>
+            </div>
+            
         </div>
         
 

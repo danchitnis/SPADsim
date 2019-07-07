@@ -9,7 +9,7 @@ let tr = 0.02;
 
 let t = nj.arange(T/tstep);
 
-
+let play = true;
 
 
 //plot data
@@ -23,17 +23,37 @@ gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
 gr.setlinecolorind(500);
 
-generate_new();
+//generate_new();
+
+setInterval(function() {
+    if (play) {
+        generate_new();
+    }
+  }, 100);
 
 
 
 
 //button function
+function ctrl_play() {
+    play = true;
+}
+
+function ctrl_pause() {
+    play = false;
+}
+
+function ctrl_step() {
+    play = false;
+    generate_new();
+}
+
+
+//plot new set
 function generate_new() {
     let y = spad(t, tr);
     let yplot=y.tolist();
     let tplot=t.tolist();
-
 
     //plot in gr canvas
     gr.clearws();
