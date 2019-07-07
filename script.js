@@ -3,17 +3,44 @@
 // 01/07/2019
 
 let T = 1;
-let phrate = 50;
+let phrate = 10;
 let tstep = 0.001;
+let tr = 0.02;
 
 let t = nj.arange(T/tstep);
 
-let y = spad(t,0.02);
-
-console.log(y);
 
 
 
+//plot data
+let canv = document.getElementById('display');
+canv.width = 1000; 
+canv.height = 400;
+
+let gr = new GR('display');
+
+gr.setviewport(0, 1, 0, 1);
+gr.setwindow(1, 1000, 0, 1);
+gr.setlinecolorind(500);
+
+generate_new();
+
+
+
+
+//button function
+function generate_new() {
+    let y = spad(t, tr);
+    let yplot=y.tolist();
+    let tplot=t.tolist();
+
+
+    //plot in gr canvas
+    gr.clearws();
+    
+    gr.polyline(1000, tplot, yplot);
+    //gr.updatews();
+}
 
 ///// functions
 
@@ -23,11 +50,8 @@ function spad(t, tr) {
     //let tgap=-(1/phrate)*nj.log(u)*T;
     let tgap = (nj.log(u)).multiply((-1/phrate)*T);
 
-    console.log(tgap);
-
     let timestamps = cumsum(tgap);
 
-    console.log(timestamps);
     
     let ystep = tr;
     let index = 0;
