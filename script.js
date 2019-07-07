@@ -23,6 +23,25 @@ gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
 gr.setlinecolorind(500);
 
+let slider = document.getElementById('slider');
+
+noUiSlider.create(slider, {
+    start: [0.5],
+    connect: [true, false],
+    //tooltips: [false, wNumb({decimals: 1}), true],
+    range: {
+        'min': 0.01,
+        'max': 1
+    }
+});
+
+slider.noUiSlider.on('update', function (values, handle) {
+    tr = parseFloat(values[handle]) / 10;
+    range_display.innerHTML = tr;
+    
+});
+
+
 //generate_new();
 
 setInterval(function() {
