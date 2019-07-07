@@ -23,9 +23,10 @@ gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
 gr.setlinecolorind(500);
 
-let slider = document.getElementById('slider');
+let slider_tr = document.getElementById('slider_tr');
+let slider_phrate = document.getElementById('slider_phrate');
 
-noUiSlider.create(slider, {
+noUiSlider.create(slider_tr, {
     start: [0.5],
     connect: [true, false],
     //tooltips: [false, wNumb({decimals: 1}), true],
@@ -35,9 +36,25 @@ noUiSlider.create(slider, {
     }
 });
 
-slider.noUiSlider.on('update', function (values, handle) {
+noUiSlider.create(slider_phrate, {
+    start: [10],
+    connect: [true, false],
+    //tooltips: [false, wNumb({decimals: 1}), true],
+    range: {
+        'min': 0.1,
+        'max': 100
+    }
+});
+
+slider_tr.noUiSlider.on('update', function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
-    range_display.innerHTML = tr;
+    display_tr.innerHTML = tr;
+    
+});
+
+slider_phrate.noUiSlider.on('update', function (values, handle) {
+    phrate = parseFloat(values[handle]);
+    display_phrate.innerHTML = phrate;
     
 });
 
