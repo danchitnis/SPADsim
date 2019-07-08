@@ -6,11 +6,17 @@ let T = 1;
 let phrate = 10;
 let tstep = 0.001;
 let tr = 0.02;
+let vth = 0.5;
 
 let t = nj.arange(T/tstep);
 
 let play = true;
 
+let flag_y = true;
+let flag_ysq = true;
+
+
+let sw_y = document.getElementById('sw_y');
 
 //plot data
 let canv = document.getElementById('display');
@@ -21,10 +27,11 @@ let gr = new GR('display');
 
 gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
-gr.setlinecolorind(500);
+
 
 let slider_tr = document.getElementById('slider_tr');
 let slider_phrate = document.getElementById('slider_phrate');
+let slider_thr = document.getElementById('slider_thr');
 
 noUiSlider.create(slider_tr, {
     start: [0.5],
@@ -46,6 +53,16 @@ noUiSlider.create(slider_phrate, {
     }
 });
 
+noUiSlider.create(slider_thr, {
+    start: [0.5],
+    connect: [true, false],
+    //tooltips: [false, wNumb({decimals: 1}), true],
+    range: {
+        'min': 0.01,
+        'max': 1
+    }
+});
+
 slider_tr.noUiSlider.on('update', function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
     display_tr.innerHTML = tr;
@@ -55,6 +72,12 @@ slider_tr.noUiSlider.on('update', function (values, handle) {
 slider_phrate.noUiSlider.on('update', function (values, handle) {
     phrate = parseFloat(values[handle]);
     display_phrate.innerHTML = phrate;
+    
+});
+
+slider_thr.noUiSlider.on('update', function (values, handle) {
+    vth = parseFloat(values[handle]);
+    display_thr.innerHTML = vth;
     
 });
 
@@ -88,15 +111,51 @@ function ctrl_step() {
 //plot new set
 function generate_new() {
     let y = spad(t, tr);
-    let yplot=y.tolist();
+    let ysq = sq(y, vth);
+
     let tplot=t.tolist();
+    let yplot=y.tolist();
+    let ysqplot = ysq.tolist();
+    
 
     //plot in gr canvas
     gr.clearws();
     
-    gr.polyline(1000, tplot, yplot);
+    if (flag_y) {
+        gr.setlinecolorind(430);
+        gr.polyline(1000, tplot, yplot);
+    }
+    
+
+    if (flag_ysq) {
+        gr.setlinecolorind(500);
+        gr.polyline(1000, tplot, ysqplot);
+    }
+    
     //gr.updatews();
 }
+
+
+//switches
+function sw_y_click() {
+    if (sw_y.checked) {
+        flag_y = true;
+    }
+    else {
+        flag_y = false;
+    }
+}
+
+function sw_ysq_click() {
+    if (sw_ysq.checked) {
+        flag_ysq = true;
+    }
+    else {
+        flag_ysq = false;
+    }
+}
+
+
 
 ///// functions
 
@@ -158,6 +217,21 @@ function cumsum(array) {
         sum.set(i, a);
     }
     return sum;
+}
+
+function sq(y, thr) {
+    let ysq = nj.zeros(T/tstep);
+
+    for (let i=0; i < y.shape[0]; i++) {
+        if (y.get(i) < thr) {
+            ysq.set(i,0);
+        }
+        else {
+            ysq.set(i,1);
+        }
+    }
+
+    return ysq;
 }
 
 

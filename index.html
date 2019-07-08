@@ -11,6 +11,10 @@
         <link async rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
 
         <script async src="https://kit.fontawesome.com/72b06963cb.js"></script>
+
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
+        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     
         
   </head>
@@ -20,12 +24,28 @@
             <h1>SPAD Simulation</h1>
             <h2>by Danial Chitnis</h2>
             <canvas id="display" class="display"></canvas>
+
+            <div>
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="sw_y">
+                    <input onclick="sw_y_click()" type="checkbox" id="sw_y" class="mdl-switch__input" checked>
+                    <span class="mdl-switch__label"></span>
+                </label>
+
+                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="sw_ysq">
+                    <input onclick="sw_ysq_click()" type="checkbox" id="sw_ysq" class="mdl-switch__input" checked>
+                    <span class="mdl-switch__label"></span>
+                </label>
+            </div>
+            
             
             <div id="slider_tr"></div>
-            <p class="range">tr = <span id="display_tr">123</span></p>
+            <p class="range">tr = <span id="display_tr"></span></p>
 
             <div id="slider_phrate"></div>
-            <p class="range">phrate = <span id="display_phrate">123</span></p>
+            <p class="range">phrate = <span id="display_phrate"></span></p>
+
+            <div id="slider_thr"></div>
+            <p class="range">Vthr = <span id="display_thr"></span></p>
 
             <div class="play">
                 <button class="bt" onclick="ctrl_play()"><i class="fas fa-play"></i></button>
