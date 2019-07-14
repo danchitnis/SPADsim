@@ -13,7 +13,12 @@ let t = nj.arange(T/tstep);
 let play = true;
 
 let flag_y = true;
-let flag_ysq = true;
+let flag_ysq = false;
+let flag_vth = false;
+let flag_new = true;
+
+//main spad results
+let y_spad;
 
 
 let sw_y = document.getElementById('sw_y');
@@ -31,7 +36,7 @@ gr.setwindow(1, 1000, 0, 1);
 
 let slider_tr = document.getElementById('slider_tr');
 let slider_phrate = document.getElementById('slider_phrate');
-let slider_thr = document.getElementById('slider_thr');
+let slider_vth = document.getElementById('slider_vth');
 
 noUiSlider.create(slider_tr, {
     start: [0.5],
@@ -53,7 +58,9 @@ noUiSlider.create(slider_phrate, {
     }
 });
 
-noUiSlider.create(slider_thr, {
+//slider_vth.style.visibility = "hidden";
+slider_vth.setAttribute('disabled', true);
+noUiSlider.create(slider_vth, {
     start: [0.5],
     connect: [true, false],
     //tooltips: [false, wNumb({decimals: 1}), true],
@@ -75,18 +82,28 @@ slider_phrate.noUiSlider.on('update', function (values, handle) {
     
 });
 
-slider_thr.noUiSlider.on('update', function (values, handle) {
+slider_vth.noUiSlider.on('update', function (values, handle) {
     vth = parseFloat(values[handle]);
     display_thr.innerHTML = vth;
     
 });
 
+slider_vth.noUiSlider.on('start', function (values, handle) {
+    flag_vth = true;
+    flag_new = false;
+    play = true;
+});
+
+slider_vth.noUiSlider.on('end', function (values, handle) {
+   flag_vth = false;
+   flag_new = true;
+});
 
 //generate_new();
 
 setInterval(function() {
     if (play) {
-        generate_new();
+        generate(flag_new);
     }
   }, 100);
 
@@ -104,20 +121,22 @@ function ctrl_pause() {
 
 function ctrl_step() {
     play = false;
-    generate_new();
+    generate(flag_new);
 }
 
 
 //plot new set
-function generate_new() {
-    let y = spad(t, tr);
-    let ysq = sq(y, vth);
+function generate(flag) {
+    
+    if (flag) {
+        y_spad = spad(t, tr);
+    }
+    
+    let ysq = sq(y_spad, vth);
 
     let tplot=t.tolist();
-    let yplot=y.tolist();
+    let yplot=y_spad.tolist();
     let ysqplot = ysq.tolist();
-    
-
     //plot in gr canvas
     gr.clearws();
     
@@ -132,6 +151,12 @@ function generate_new() {
         gr.polyline(1000, tplot, ysqplot);
     }
     
+    if (flag_vth) {
+        let line = (nj.ones(1000)).multiply(vth);
+        let line_plot=line.tolist();
+        gr.setlinecolorind(550);
+        gr.polyline(1000, tplot, line_plot);
+    }
     //gr.updatews();
 }
 
@@ -149,9 +174,11 @@ function sw_y_click() {
 function sw_ysq_click() {
     if (sw_ysq.checked) {
         flag_ysq = true;
+        slider_vth.removeAttribute('disabled');
     }
     else {
         flag_ysq = false;
+        slider_vth.setAttribute('disabled', true);
     }
 }
 
