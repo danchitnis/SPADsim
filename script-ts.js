@@ -1,0 +1,14 @@
+"use strict";
+exports.__esModule = true;
+var nj = require("numjs");
+var T = 1;
+var phrate = 10;
+var tstep = 0.001;
+var tr = 0.02;
+var vth = 0.5;
+var t = nj.arange(T / tstep);
+var play = true;
+var flag_vth = false;
+var flag_new = true;
+var flag_CH1 = true;
+var flag_CH2 = false;
