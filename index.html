@@ -12,9 +12,6 @@
 
         <script async src="https://kit.fontawesome.com/72b06963cb.js"></script>
 
-        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-        <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-        <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
     
         
   </head>
@@ -26,17 +23,11 @@
             <canvas id="display" class="display"></canvas>
 
             <div>
-                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="sw_y">
-                    <input onclick="sw_y_click()" type="checkbox" id="sw_y" class="mdl-switch__input" checked>
-                    <span class="mdl-switch__label">Y</span>
-                </label>
-
-                <label class="mdl-switch mdl-js-switch mdl-js-ripple-effect" for="sw_ysq">
-                    <input onclick="sw_ysq_click()" type="checkbox" id="sw_ysq" class="mdl-switch__input">
-                    <span class="mdl-switch__label">Ysq</span>
-                </label>
+                <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
+                <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
             </div>
-            
+
+            <p></p>
             
             <div id="slider_tr"></div>
             <p class="range">tr = <span id="display_tr"></span></p>
@@ -100,7 +91,7 @@
                 text-align: center;
                 text-decoration: none;
                 display: inline-block;
-                font-size: 1em;
+                font-size: 1.2em;
                 border-radius: 30px;
                 cursor: pointer;
                 transition-duration: 0.1s;
