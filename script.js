@@ -105,10 +105,12 @@ setInterval(function() {
 //button function
 function ctrl_play() {
   play = true;
+  flag_new = true;
 }
 
 function ctrl_pause() {
-  play = false;
+  play = true;
+  flag_new = false;
 }
 
 function ctrl_step() {
@@ -149,7 +151,7 @@ function generate(flag) {
   //gr.updatews();
 }
 
-//switches
+//channels
 function btCH1() {
   bt = document.getElementById("btCH1");
   if (flag_CH1) {
