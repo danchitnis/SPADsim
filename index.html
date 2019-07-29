@@ -20,7 +20,30 @@
         <div>
             <h1>SPAD Simulation</h1>
             <h2>by Danial Chitnis</h2>
-            <canvas id="display" class="display"></canvas>
+            
+            <style>
+                .grid-osc {
+                    display: grid;
+                    grid-gap: 10px;
+                    background-color: #2196F3;
+                    padding: 10px;
+                    grid-template-columns: 5% auto 5%;
+                }
+                .grid-osc > div {
+                    background-color: rgba(255, 255, 255, 0.8);
+                    text-align: center;
+                    padding: 20px 0;
+                    font-size: 30px;
+                }
+            </style>
+
+            <div class=grid-osc>
+                <div>1</div>
+                <div><canvas id="display" class="display"></canvas></div>
+                <div>3</div>
+            </div>
+            <div>canvas here!</div>
+            
 
             <div>
                 <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
