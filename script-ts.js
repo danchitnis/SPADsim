@@ -22,9 +22,7 @@ var gr = new GR("display");
 gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
 var y = nj.arange(1000);
-var tplot = t.tolist();
-var yplot = (y.divide(1000)).tolist();
-gr.polyline(1000, tplot, yplot);
+//gr.polyline(1000, tplot, yplot);
 var slider_tr = document.getElementById('slider_tr');
 var slider_phrate = document.getElementById("slider_phrate");
 ;
@@ -80,3 +78,10 @@ slider_vth.noUiSlider.on("end", function (values, handle) {
     flag_vth = false;
     flag_new = true;
 });
+//button function
+var spad = new SPAD(0.1);
+spad.generate();
+var tplot = spad.t.tolist();
+var yplot = spad.y.tolist();
+gr.polyline(1000, tplot, yplot);
+//plot new set

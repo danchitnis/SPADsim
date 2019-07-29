@@ -1,6 +1,8 @@
 import * as nj from "numjs";
 import * as noUiSlider from "nouislider";
-import GR from "grframework";
+import { GR } from "grframework";
+
+import { SPAD } from "./SPAD/spad";
 
 
 
@@ -36,10 +38,9 @@ gr.setwindow(1, 1000, 0, 1);
 
 let y=nj.arange(1000);
 
-let tplot = t.tolist();
-let yplot = (y.divide(1000)).tolist();
 
-gr.polyline(1000, tplot, yplot);
+
+//gr.polyline(1000, tplot, yplot);
 
 let slider_tr = document.getElementById('slider_tr') as noUiSlider.Instance;
 let slider_phrate = document.getElementById("slider_phrate") as noUiSlider.Instance;;
@@ -105,3 +106,19 @@ slider_tr.noUiSlider.on("update", function(values, handle) {
     flag_new = true;
   });
   
+  
+  
+//button function
+  
+  
+let spad = new SPAD(0.1);
+
+spad.generate();
+
+let tplot = spad.t.tolist();
+let yplot = spad.y.tolist();
+
+gr.polyline(1000, tplot, yplot);
+
+//plot new set
+ 
