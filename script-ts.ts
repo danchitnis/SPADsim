@@ -111,9 +111,9 @@ slider_tr.noUiSlider.on("update", function(values, handle) {
 //button function
   
   
-let spad = new SPAD(0.1);
+let spad = new SPAD(1000);
 
-spad.generate();
+spad.generate_photon();
 
 let tplot = spad.t.tolist();
 let yplot = spad.y.tolist();
