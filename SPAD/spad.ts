@@ -9,21 +9,24 @@ import * as nj from "numjs";
  * SPAD CLass function
  */
 export class SPAD {
-    N: number; //size of the array
+    N: number; 
     tr: number;
     t:  nj.NdArray;
     timestamps: nj.NdArray;
     y: nj.NdArray;
+    ysq: nj.NdArray;
 
     /**
      * 
-     * @param N 
+     * @param N the number of datapoints in time
      */
     constructor(N:number) {
         this.N = N;
         this.t = nj.arange(N);
+        this.tr = 0;
         this.timestamps = nj.arange(N);
         this.y = nj.zeros(N);
+        this.ysq = nj.zeros(N);
 
     }
     /**
@@ -33,7 +36,7 @@ export class SPAD {
     generate_photon(phrate:number) {
         let u = nj.random(phrate * 3);
         //let tgap=-(1/phrate)*nj.log(u)*T;
-        let tgap = (nj.log(u)).multiply((-1 / phrate) * T);
+        let tgap = (nj.log(u)).multiply(-1 / phrate);
 
         this.timestamps = cumsum(tgap);
         
@@ -41,6 +44,11 @@ export class SPAD {
         return this.y;
     }
     
+    /**
+     * generate the y values based on the recovery time. 
+     * run generate photon first
+     * @param tr the recovery time
+     */
     update_y(tr:number):void {
         this.tr = tr;
         let ystep = this.tr;
@@ -61,14 +69,36 @@ export class SPAD {
                 apply_ystep(y, i, ystep);
             }
         }
+        this.y = y;
+    }
+
+    /**
+     * Do the square thresholding
+     * @param vthr the voltage threshold value from 0 to 1 range
+     */
+    sq(vthr:number):void {
+        let ysq = nj.zeros(this.N);
+        for (let i = 0; i < this.y.shape[0]; i++) {
+            if (this.y.get(i) < vthr) {
+                ysq.set(i, 0);
+            } else {
+                ysq.set(i, 1);
+            }
+        }
+        this.ysq = ysq;
+    }
+    
+}
+
+
+function apply_ystep(y:nj.NdArray, i:number, ystep:number):void{
+    if (y.get(i - 1) > 0) {
+      let a = y.get(i - 1) - ystep;
+      y.set(i, a);
+    } else {
+      y.set(i, 0);
     }
 }
-
-
-function apply_ystep():void {
-
-}
-
 
 function cumsum(array:nj.NdArray) :nj.NdArray {
     let size = array.shape[0];

@@ -6,9 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SPAD Simulation</title>
         
-        <script aysnc src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
-        <script async src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
-        <link async rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
+        
 
         <script async src="https://kit.fontawesome.com/72b06963cb.js"></script>
 
@@ -59,7 +57,7 @@
             <p class="range">phrate = <span id="display_phrate"></span></p>
 
             <div id="slider_vth"></div>
-            <p class="range">Vthr = <span id="display_thr"></span></p>
+            <p class="range">Vthr = <span id="display_vth"></span></p>
 
             <div class="play">
                 <button class="bt" onclick="ctrl_play()"><i class="fas fa-play"></i></button>
@@ -126,6 +124,10 @@
             }
         </style>
 
+        <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
+        
         <script src="gr-latest.js"></script>
         <script src="./SPAD/spad.js"></script>
         <script src="script-ts.js"></script>

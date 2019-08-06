@@ -5,14 +5,12 @@ import { GR } from "grframework";
 import { SPAD } from "./SPAD/spad";
 
 
-
-let T = 1;
+let N = 1000;
 let phrate = 10;
-let tstep = 0.001;
 let tr = 0.02;
 let vth = 0.5;
 
-let t = nj.arange(T / tstep);
+let t = nj.arange(N);
 
 let play = true;
 
@@ -82,17 +80,20 @@ noUiSlider.create(slider_vth, {
 
 slider_tr.noUiSlider.on("update", function(values, handle) {
     tr = parseFloat(values[handle]) / 10;
-    //display_tr.innerHTML = tr;
+    (<HTMLParagraphElement>document.getElementById("display_tr")).innerHTML = tr.toString();
+
+    
   });
   
   slider_phrate.noUiSlider.on("update", function(values, handle) {
     phrate = parseFloat(values[handle]);
-    //display_phrate.innerHTML = phrate;
+    (<HTMLParagraphElement>document.getElementById("display_phrate")).innerHTML = phrate.toString();
+    
   });
   
   slider_vth.noUiSlider.on("update", function(values, handle) {
     vth = parseFloat(values[handle]);
-    //display_thr.innerHTML = vth;
+    (<HTMLParagraphElement>document.getElementById("display_vth")).innerHTML = vth.toString();
   });
   
   slider_vth.noUiSlider.on("start", function(values, handle) {
@@ -106,19 +107,44 @@ slider_tr.noUiSlider.on("update", function(values, handle) {
     flag_new = true;
   });
   
+
+let spad = new SPAD(1000);
+let tplot = spad.t.tolist();
+
+setInterval(function() {
+  if (play) {
+    update();
+  }
+}, 100);
   
+
   
 //button function
-  
-  
-let spad = new SPAD(1000);
+function ctrl_play():void {
+  play = true;
+}
 
-spad.generate_photon();
+function ctrl_pause():void {
+  play = false;
+}
 
-let tplot = spad.t.tolist();
-let yplot = spad.y.tolist();
+function ctrl_step():void {
+  play = false;
+  update();
+}
 
-gr.polyline(1000, tplot, yplot);
+
+
+
+
 
 //plot new set
- 
+
+function update(): void {
+  spad.generate_photon(phrate);
+  spad.update_y(tr);
+  let yplot = spad.y.tolist();
+
+  gr.clearws();
+  gr.polyline(1000, tplot, yplot);
+}
