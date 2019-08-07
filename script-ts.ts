@@ -19,6 +19,8 @@ let flag_new = true;
 let flag_CH1 = true;
 let flag_CH2 = false;
 
+let run_single = false;
+
 //main spad results
 let y_spad:nj.NdArray;
 
@@ -78,43 +80,23 @@ noUiSlider.create(slider_vth, {
 
 
 
-slider_tr.noUiSlider.on("update", function(values, handle) {
-    tr = parseFloat(values[handle]) / 10;
-    (<HTMLParagraphElement>document.getElementById("display_tr")).innerHTML = tr.toString();
 
-    
-  });
-  
-  slider_phrate.noUiSlider.on("update", function(values, handle) {
-    phrate = parseFloat(values[handle]);
-    (<HTMLParagraphElement>document.getElementById("display_phrate")).innerHTML = phrate.toString();
-    
-  });
-  
-  slider_vth.noUiSlider.on("update", function(values, handle) {
-    vth = parseFloat(values[handle]);
-    (<HTMLParagraphElement>document.getElementById("display_vth")).innerHTML = vth.toString();
-  });
-  
-  slider_vth.noUiSlider.on("start", function(values, handle) {
-    flag_vth = true;
-    flag_new = false;
-    play = true;
-  });
-  
-  slider_vth.noUiSlider.on("end", function(values, handle) {
-    flag_vth = false;
-    flag_new = true;
-  });
-  
 
 let spad = new SPAD(1000);
 let tplot = spad.t.tolist();
 
 setInterval(function() {
-  if (play) {
-    update();
+
+  if (run_single) {
+    update(false);
+    run_single = false;
   }
+  else {
+    if (play) {
+      update(true);
+    }
+  }
+
 }, 100);
   
 
@@ -130,18 +112,48 @@ function ctrl_pause():void {
 
 function ctrl_step():void {
   play = false;
-  update();
+  //update();
 }
 
 
 
+slider_tr.noUiSlider.on("update", function(values, handle) {
+  tr = parseFloat(values[handle]) / 10;
+  (<HTMLParagraphElement>document.getElementById("display_tr")).innerHTML = tr.toString();
+  run_single = true;
+});
+
+slider_phrate.noUiSlider.on("update", function(values, handle) {
+  phrate = parseFloat(values[handle]);
+  (<HTMLParagraphElement>document.getElementById("display_phrate")).innerHTML = phrate.toString();
+  spad.generate_photon(phrate);
+  run_single = true;
+});
+
+slider_vth.noUiSlider.on("update", function(values, handle) {
+  vth = parseFloat(values[handle]);
+  (<HTMLParagraphElement>document.getElementById("display_vth")).innerHTML = vth.toString();
+});
+
+slider_vth.noUiSlider.on("start", function(values, handle) {
+  flag_vth = true;
+  flag_new = false;
+  play = true;
+});
+
+slider_vth.noUiSlider.on("end", function(values, handle) {
+  flag_vth = false;
+  flag_new = true;
+});
 
 
 
 //plot new set
 
-function update(): void {
-  spad.generate_photon(phrate);
+function update(new_photon:boolean): void {
+  if (new_photon) {
+    spad.generate_photon(phrate);
+  }
   spad.update_y(tr);
   let yplot = spad.y.tolist();
 

@@ -1,6 +1,4 @@
 "use strict";
-exports.__esModule = true;
-var noUiSlider = require("nouislider");
 var N = 1000;
 var phrate = 10;
 var tr = 0.02;
@@ -11,6 +9,7 @@ var flag_vth = false;
 var flag_new = true;
 var flag_CH1 = true;
 var flag_CH2 = false;
+var run_single = false;
 //main spad results
 var y_spad;
 var sw_y = document.getElementById("sw_y");
@@ -18,7 +17,7 @@ var sw_y = document.getElementById("sw_y");
 var canv = document.getElementById("display");
 canv.width = 1000;
 canv.height = 400;
-var gr = new grframework_1.GR("display");
+var gr = new GR("display");
 gr.setviewport(0, 1, 0, 1);
 gr.setwindow(1, 1000, 0, 1);
 var y = nj.arange(1000);
@@ -57,13 +56,40 @@ noUiSlider.create(slider_vth, {
         max: 1
     }
 });
+var spad = new SPAD(1000);
+var tplot = spad.t.tolist();
+setInterval(function () {
+    if (run_single) {
+        update(false);
+        run_single = false;
+    }
+    else {
+        if (play) {
+            update(true);
+        }
+    }
+}, 100);
+//button function
+function ctrl_play() {
+    play = true;
+}
+function ctrl_pause() {
+    play = false;
+}
+function ctrl_step() {
+    play = false;
+    //update();
+}
 slider_tr.noUiSlider.on("update", function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
     document.getElementById("display_tr").innerHTML = tr.toString();
+    run_single = true;
 });
 slider_phrate.noUiSlider.on("update", function (values, handle) {
     phrate = parseFloat(values[handle]);
     document.getElementById("display_phrate").innerHTML = phrate.toString();
+    spad.generate_photon(phrate);
+    run_single = true;
 });
 slider_vth.noUiSlider.on("update", function (values, handle) {
     vth = parseFloat(values[handle]);
@@ -78,27 +104,11 @@ slider_vth.noUiSlider.on("end", function (values, handle) {
     flag_vth = false;
     flag_new = true;
 });
-var spad = new spad_1.SPAD(1000);
-var tplot = spad.t.tolist();
-setInterval(function () {
-    if (play) {
-        update();
-    }
-}, 100);
-//button function
-function ctrl_play() {
-    play = true;
-}
-function ctrl_pause() {
-    play = false;
-}
-function ctrl_step() {
-    play = false;
-    update();
-}
 //plot new set
-function update() {
-    spad.generate_photon(phrate);
+function update(new_photon) {
+    if (new_photon) {
+        spad.generate_photon(phrate);
+    }
     spad.update_y(tr);
     var yplot = spad.y.tolist();
     gr.clearws();

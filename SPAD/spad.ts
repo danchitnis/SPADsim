@@ -33,15 +33,12 @@ export class SPAD {
      * SPAD photon gneration
      * @param phrate photon rate normlised to 1
      */
-    generate_photon(phrate:number) {
+    generate_photon(phrate:number):void {
         let u = nj.random(phrate * 3);
         //let tgap=-(1/phrate)*nj.log(u)*T;
         let tgap = (nj.log(u)).multiply(-1 / phrate);
 
         this.timestamps = cumsum(tgap);
-        
-        this.y = (nj.arange(1000)).divide(1000);
-        return this.y;
     }
     
     /**
