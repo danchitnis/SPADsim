@@ -70,15 +70,19 @@ setInterval(function () {
     }
 }, 100);
 //button function
-function ctrl_play() {
+function ctrl_run() {
     play = true;
+    document.getElementById("bt-run").style.backgroundColor = "green";
+    document.getElementById("bt-single").style.backgroundColor = "";
 }
-function ctrl_pause() {
+function ctrl_single() {
     play = false;
-}
-function ctrl_step() {
-    play = false;
-    //update();
+    document.getElementById("bt-run").style.backgroundColor = "green";
+    document.getElementById("bt-single").style.backgroundColor = "";
+    setTimeout(function () {
+        document.getElementById("bt-run").style.backgroundColor = "";
+        document.getElementById("bt-single").style.backgroundColor = "red";
+    }, 200);
 }
 slider_tr.noUiSlider.on("update", function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
@@ -112,5 +116,6 @@ function update(new_photon) {
     spad.update_y(tr);
     var yplot = spad.y.tolist();
     gr.clearws();
+    gr.setlinecolorind(430);
     gr.polyline(1000, tplot, yplot);
 }

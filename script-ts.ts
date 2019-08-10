@@ -102,18 +102,24 @@ setInterval(function() {
 
   
 //button function
-function ctrl_play():void {
+function ctrl_run():void {
   play = true;
+  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
+  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
 }
 
-function ctrl_pause():void {
+function ctrl_single():void {
   play = false;
+  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
+  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
+  setTimeout(function() {
+    (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "";
+    (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "red";
+  }, 200);
+  
+  
 }
 
-function ctrl_step():void {
-  play = false;
-  //update();
-}
 
 
 
@@ -158,5 +164,6 @@ function update(new_photon:boolean): void {
   let yplot = spad.y.tolist();
 
   gr.clearws();
+  gr.setlinecolorind(430);
   gr.polyline(1000, tplot, yplot);
 }

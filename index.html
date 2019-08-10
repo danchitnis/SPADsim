@@ -15,64 +15,82 @@
   </head>
   
   <body>
-        <div>
+        <div style="width: 80%">
             <h1>SPAD Simulation</h1>
             <h2>by Danial Chitnis</h2>
             
             <style>
                 .grid-osc {
                     display: grid;
-                    grid-gap: 10px;
+                    grid-gap: 0px;
                     background-color: #2196F3;
-                    padding: 10px;
-                    grid-template-columns: 5% auto 5%;
+                    border: solid green 2px;
+                    grid-template-columns: 2% auto auto;
+                    grid-template-rows: 2em auto 2em;
                 }
                 .grid-osc > div {
                     background-color: rgba(255, 255, 255, 0.8);
                     text-align: center;
-                    padding: 20px 0;
-                    font-size: 30px;
+                    padding: 0px 0;
+                    font-size: 1em;
                 }
             </style>
 
             <div class=grid-osc>
-                <div>1</div>
-                <div><canvas id="display" class="display"></canvas></div>
-                <div>3</div>
+                <div>11</div>
+                <div>12</div>
+                <div>13</div>
+                <div>21</div>
+                <div class="display"><canvas id="display"></canvas></div>
+                <div>
+                    <span>23</span>
+                    <div class="play">
+                        <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
+                        <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
+                    </div>
+                    <p></p>
+                    <div class="play">
+                        <button class="bt" id="bt-run" onclick="ctrl_run()">RUN</button>
+                        <button class="bt" id="bt-single" onclick="ctrl_single()">SINGLE</button>
+        
+                        <style>
+                            .play {
+                                display: flex;
+                            }
+                            .play > button {
+                                margin-right: 1em;
+                                color: darkslategrey;
+                            }
+                        </style>
+                                
+                    </div>
+
+                </div>
+                <div>31</div>
+                <div>32</div>
+                <div>33</div>
             </div>
             <div>canvas here!</div>
             
 
-            <div>
-                <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
-                <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
-            </div>
+            
 
             <p></p>
             
-            <div id="slider_tr"></div>
-            <p class="range">tr = <span id="display_tr"></span></p>
+            <div style="width: 80%">
+                <div id="slider_tr"></div>
+                <p class="range">tr = <span id="display_tr"></span></p>
+    
+                <div id="slider_phrate"></div>
+                <p class="range">phrate = <span id="display_phrate"></span></p>
+    
+                <div id="slider_vth"></div>
+                <p class="range">Vthr = <span id="display_vth"></span></p>
+    
+                
 
-            <div id="slider_phrate"></div>
-            <p class="range">phrate = <span id="display_phrate"></span></p>
-
-            <div id="slider_vth"></div>
-            <p class="range">Vthr = <span id="display_vth"></span></p>
-
-            <div class="play">
-                <button class="bt" onclick="ctrl_play()"><i class="fas fa-play"></i></button>
-                <button class="bt" onclick="ctrl_pause()"><i class="fas fa-pause"></i></button>
-                <button class="bt" onclick="ctrl_step()"><i class="fas fa-step-forward"></i></button>
-
-                <style>
-                    .play {
-                        display: flex;
-                    }
-                    .play > button {
-                        margin-right: 1em;
-                    }
-                </style>
             </div>
+            
             
         </div>
         
@@ -87,6 +105,7 @@
                 justify-content: center;
                 text-align: center;
                 font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+                width: 100%;
             }
             
             h1, h2 {
@@ -99,9 +118,15 @@
             }
             
             .display {
+                border: solid 2px pink;
+                background-color: blue;
+            }
+            .display > canvas {
                 max-width: 90%;
                 padding-top: 20px;
                 padding-bottom: 20px;
+                border: solid 2px red;
+                background: #2b2b2b;
             }
 
             .bt {
