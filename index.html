@@ -38,16 +38,12 @@
 
             <div class=grid-osc>
                 <div>11</div>
-                <div>12</div>
+                <div style="text-align: left"><span>Edinburgh Oscilloscope<span></div>
                 <div>13</div>
                 <div>21</div>
                 <div class="display"><canvas id="display"></canvas></div>
                 <div>
                     <span>23</span>
-                    <div class="play">
-                        <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
-                        <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
-                    </div>
                     <p></p>
                     <div class="play">
                         <button class="bt" id="bt-run" onclick="ctrl_run()">RUN</button>
@@ -61,8 +57,13 @@
                                 margin-right: 1em;
                                 color: darkslategrey;
                             }
-                        </style>
-                                
+                        </style>   
+                    </div>
+                    <p></p>
+                    <p></p>
+                    <div class="play">
+                        <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
+                        <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
                     </div>
 
                 </div>
@@ -140,12 +141,15 @@
                 font-size: 1.2em;
                 border-radius: 30px;
                 cursor: pointer;
-                transition-duration: 0.1s;
+                transition-duration: 0.05s;
+                box-shadow: 5px 5px 2px grey;
             }
 
             .bt:hover {
-                background-color: rgb(58, 100, 179);
-                border-color:  rgb(58, 100, 179);
+                box-shadow: 5px 5px 5px;
+            }
+            .bt:active {
+                box-shadow: 0px 0px 0px;
             }
         </style>
 

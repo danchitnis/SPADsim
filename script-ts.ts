@@ -88,12 +88,12 @@ let tplot = spad.t.tolist();
 setInterval(function() {
 
   if (run_single) {
-    update(false);
+    update(false, true, true);
     run_single = false;
   }
   else {
     if (play) {
-      update(true);
+      update(true, true, true);
     }
   }
 
@@ -110,6 +110,9 @@ function ctrl_run():void {
 
 function ctrl_single():void {
   play = false;
+  update(true, true, true);
+
+
   (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
   (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
   setTimeout(function() {
@@ -142,28 +145,79 @@ slider_vth.noUiSlider.on("update", function(values, handle) {
 });
 
 slider_vth.noUiSlider.on("start", function(values, handle) {
-  flag_vth = true;
-  flag_new = false;
-  play = true;
+  //flag_vth = true;
+  //flag_new = false;
+  //play = true;
+  if (!play) {
+    setInterval(function() {
+        update(false, false, true);
+      }, 100);
+  }
 });
+ 
 
 slider_vth.noUiSlider.on("end", function(values, handle) {
-  flag_vth = false;
-  flag_new = true;
+  //flag_vth = false;
+  //flag_new = true;
 });
 
 
 
 //plot new set
 
-function update(new_photon:boolean): void {
+function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
   if (new_photon) {
     spad.generate_photon(phrate);
   }
-  spad.update_y(tr);
-  let yplot = spad.y.tolist();
 
   gr.clearws();
-  gr.setlinecolorind(430);
-  gr.polyline(1000, tplot, yplot);
+  
+  if (ch1) {
+    spad.update_y(tr);
+  }
+
+  if (flag_CH1) {
+    gr.setlinecolorind(430);
+    gr.polyline(1000, tplot, spad.y.tolist());
+  }
+
+
+  if (ch2) {
+    spad.update_ysq(vth);
+  }
+  if (flag_CH2) {
+    gr.setlinecolorind(530);
+    gr.polyline(1000, tplot, spad.ysq.tolist());
+  }
+
+  
+}
+
+
+
+
+// CH functions
+
+function btCH1() {
+  let bt = <HTMLButtonElement>document.getElementById("btCH1");
+  if (flag_CH1) {
+    flag_CH1 = false;
+    bt.style.backgroundColor = "";
+  } else {
+    flag_CH1 = true;
+    bt.style.backgroundColor = "Yellow";
+  }
+}
+
+function btCH2() {
+  let bt = <HTMLButtonElement>document.getElementById("btCH2");
+  if (flag_CH2) {
+    flag_CH2 = false;
+    slider_vth.setAttribute("disabled", "true");
+    bt.style.backgroundColor = "";
+  } else {
+    flag_CH2 = true;
+    slider_vth.removeAttribute("disabled");
+    bt.style.backgroundColor = "lightgreen";
+  }
 }

@@ -73,7 +73,7 @@ export class SPAD {
      * Do the square thresholding
      * @param vthr the voltage threshold value from 0 to 1 range
      */
-    sq(vthr:number):void {
+    update_ysq(vthr:number):void {
         let ysq = nj.zeros(this.N);
         for (let i = 0; i < this.y.shape[0]; i++) {
             if (this.y.get(i) < vthr) {

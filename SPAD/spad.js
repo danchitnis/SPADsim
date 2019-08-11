@@ -60,7 +60,7 @@ var SPAD = /** @class */ (function () {
      * Do the square thresholding
      * @param vthr the voltage threshold value from 0 to 1 range
      */
-    SPAD.prototype.sq = function (vthr) {
+    SPAD.prototype.update_ysq = function (vthr) {
         var ysq = nj.zeros(this.N);
         for (var i = 0; i < this.y.shape[0]; i++) {
             if (this.y.get(i) < vthr) {
