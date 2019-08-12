@@ -80,7 +80,7 @@ noUiSlider.create(slider_vth, {
 
 
 
-
+update_ui();
 
 let spad = new SPAD(1000);
 let tplot = spad.t.tolist();
@@ -148,6 +148,8 @@ slider_vth.noUiSlider.on("start", function(values, handle) {
   //flag_vth = true;
   //flag_new = false;
   //play = true;
+  flag_vth = true;
+
   if (!play) {
     setInterval(function() {
         update(false, false, true);
@@ -159,6 +161,7 @@ slider_vth.noUiSlider.on("start", function(values, handle) {
 slider_vth.noUiSlider.on("end", function(values, handle) {
   //flag_vth = false;
   //flag_new = true;
+  flag_vth = false;
 });
 
 
@@ -188,9 +191,38 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
   if (flag_CH2) {
     gr.setlinecolorind(530);
     gr.polyline(1000, tplot, spad.ysq.tolist());
+    if (flag_vth) {
+      let y = (nj.ones(1000)).multiply(vth);
+      gr.setlinecolorind(550);
+      gr.polyline(1000, tplot, y.tolist());
+    }
   }
 
-  
+}
+
+
+
+function update_ui():void {
+  if (play) {
+    (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
+  }
+  else {
+    (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "";
+  }
+
+  if (flag_CH1) {
+    (<HTMLButtonElement>document.getElementById("btCH1")).style.backgroundColor = "yellow";
+  }
+  else {
+    (<HTMLButtonElement>document.getElementById("btCH1")).style.backgroundColor = "";
+  }
+
+  if (flag_CH2) {
+    (<HTMLButtonElement>document.getElementById("btCH2")).style.backgroundColor = "green";
+  }
+  else {
+    (<HTMLButtonElement>document.getElementById("btCH2")).style.backgroundColor = "";
+  }
 }
 
 

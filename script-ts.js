@@ -56,6 +56,7 @@ noUiSlider.create(slider_vth, {
         max: 1
     }
 });
+update_ui();
 var spad = new SPAD(1000);
 var tplot = spad.t.tolist();
 setInterval(function () {
@@ -104,6 +105,7 @@ slider_vth.noUiSlider.on("start", function (values, handle) {
     //flag_vth = true;
     //flag_new = false;
     //play = true;
+    flag_vth = true;
     if (!play) {
         setInterval(function () {
             update(false, false, true);
@@ -113,6 +115,7 @@ slider_vth.noUiSlider.on("start", function (values, handle) {
 slider_vth.noUiSlider.on("end", function (values, handle) {
     //flag_vth = false;
     //flag_new = true;
+    flag_vth = false;
 });
 //plot new set
 function update(new_photon, ch1, ch2) {
@@ -133,6 +136,31 @@ function update(new_photon, ch1, ch2) {
     if (flag_CH2) {
         gr.setlinecolorind(530);
         gr.polyline(1000, tplot, spad.ysq.tolist());
+        if (flag_vth) {
+            var y_1 = (nj.ones(1000)).multiply(vth);
+            gr.setlinecolorind(550);
+            gr.polyline(1000, tplot, y_1.tolist());
+        }
+    }
+}
+function update_ui() {
+    if (play) {
+        document.getElementById("bt-run").style.backgroundColor = "green";
+    }
+    else {
+        document.getElementById("bt-run").style.backgroundColor = "";
+    }
+    if (flag_CH1) {
+        document.getElementById("btCH1").style.backgroundColor = "yellow";
+    }
+    else {
+        document.getElementById("btCH1").style.backgroundColor = "";
+    }
+    if (flag_CH2) {
+        document.getElementById("btCH2").style.backgroundColor = "green";
+    }
+    else {
+        document.getElementById("btCH2").style.backgroundColor = "";
     }
 }
 // CH functions
