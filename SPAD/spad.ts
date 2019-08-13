@@ -15,6 +15,7 @@ export class SPAD {
     timestamps: nj.NdArray;
     y: nj.NdArray;
     ysq: nj.NdArray;
+    bw: number;
 
     /**
      * 
@@ -27,10 +28,11 @@ export class SPAD {
         this.timestamps = nj.arange(N);
         this.y = nj.zeros(N);
         this.ysq = nj.zeros(N);
+        this.bw = 0;
 
     }
     /**
-     * SPAD photon gneration
+     * SPAD photon gneration based random numbers
      * @param phrate photon rate normlised to 1
      */
     generate_photon(phrate:number):void {
@@ -70,7 +72,7 @@ export class SPAD {
     }
 
     /**
-     * Do the square thresholding
+     * Do the square inverter thresholding
      * @param vthr the voltage threshold value from 0 to 1 range
      */
     update_ysq(vthr:number):void {
@@ -81,6 +83,9 @@ export class SPAD {
             } else {
                 ysq.set(i, 1);
             }
+        }
+        if (this.bw>0) {
+            apply_bw(ysq, this.bw);
         }
         this.ysq = ysq;
     }
@@ -109,4 +114,9 @@ function cumsum(array:nj.NdArray) :nj.NdArray {
         sum.set(i, a);
     }
     return sum;
+}
+
+
+function apply_bw(y:nj.NdArray, bw:number):void {
+    //
 }
