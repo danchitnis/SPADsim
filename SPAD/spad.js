@@ -17,9 +17,10 @@ var SPAD = /** @class */ (function () {
         this.timestamps = nj.arange(N);
         this.y = nj.zeros(N);
         this.ysq = nj.zeros(N);
+        this.bw = 0;
     }
     /**
-     * SPAD photon gneration
+     * SPAD photon gneration based random numbers
      * @param phrate photon rate normlised to 1
      */
     SPAD.prototype.generate_photon = function (phrate) {
@@ -57,7 +58,7 @@ var SPAD = /** @class */ (function () {
         this.y = y;
     };
     /**
-     * Do the square thresholding
+     * Do the square inverter thresholding
      * @param vthr the voltage threshold value from 0 to 1 range
      */
     SPAD.prototype.update_ysq = function (vthr) {
@@ -69,6 +70,9 @@ var SPAD = /** @class */ (function () {
             else {
                 ysq.set(i, 1);
             }
+        }
+        if (this.bw > 0) {
+            apply_bw(ysq, this.bw);
         }
         this.ysq = ysq;
     };
@@ -92,4 +96,7 @@ function cumsum(array) {
         sum.set(i, a);
     }
     return sum;
+}
+function apply_bw(y, bw) {
+    //
 }

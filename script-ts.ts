@@ -10,21 +10,21 @@ let phrate = 10;
 let tr = 0.02;
 let vth = 0.5;
 
-let t = nj.arange(N);
 
-let play = true;
+
 
 let flag_vth = false;
-let flag_new = true;
+
 let flag_CH1 = true;
 let flag_CH2 = false;
 
 let run_single = false;
 
-//main spad results
-let y_spad:nj.NdArray;
+let update_new_ph = true;
+let update_ch1 = true;
+let update_ch2 = false;
 
-let sw_y = document.getElementById("sw_y");
+
 
 //plot data
 let canv = <HTMLCanvasElement>document.getElementById("display");
@@ -87,41 +87,13 @@ let tplot = spad.t.tolist();
 
 setInterval(function() {
 
-  if (run_single) {
-    update(false, true, true);
-    run_single = false;
-  }
-  else {
-    if (play) {
-      update(true, true, true);
-    }
-  }
+  update(update_new_ph, update_ch1, update_ch2);
 
 }, 100);
   
 
   
-//button function
-function ctrl_run():void {
-  play = true;
-  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
-  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
-}
 
-function ctrl_single():void {
-  play = false;
-  update(true, true, true);
-
-
-  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
-  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
-  setTimeout(function() {
-    (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "";
-    (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "red";
-  }, 200);
-  
-  
-}
 
 
 
@@ -129,14 +101,14 @@ function ctrl_single():void {
 slider_tr.noUiSlider.on("update", function(values, handle) {
   tr = parseFloat(values[handle]) / 10;
   (<HTMLParagraphElement>document.getElementById("display_tr")).innerHTML = tr.toString();
-  run_single = true;
+  //run_single = true;
 });
 
 slider_phrate.noUiSlider.on("update", function(values, handle) {
   phrate = parseFloat(values[handle]);
   (<HTMLParagraphElement>document.getElementById("display_phrate")).innerHTML = phrate.toString();
   spad.generate_photon(phrate);
-  run_single = true;
+  //run_single = true;
 });
 
 slider_vth.noUiSlider.on("update", function(values, handle) {
@@ -144,25 +116,37 @@ slider_vth.noUiSlider.on("update", function(values, handle) {
   (<HTMLParagraphElement>document.getElementById("display_vth")).innerHTML = vth.toString();
 });
 
-slider_vth.noUiSlider.on("start", function(values, handle) {
-  //flag_vth = true;
-  //flag_new = false;
-  //play = true;
-  flag_vth = true;
+slider_tr.noUiSlider.on("start", function(values, handle) {slider_start();});
+slider_tr.noUiSlider.on("end", function(values, handle) {slider_end();});
+slider_phrate.noUiSlider.on("start", function(values, handle) {slider_start();});
+slider_phrate.noUiSlider.on("end", function(values, handle) {slider_end();});
 
-  if (!play) {
-    setInterval(function() {
-        update(false, false, true);
-      }, 100);
+slider_vth.noUiSlider.on("start", function(values, handle) {
+  flag_vth = true;
+  if (run_single) {
+    update_ch1=false;
+    update_ch2 = true;
   }
 });
  
 
 slider_vth.noUiSlider.on("end", function(values, handle) {
-  //flag_vth = false;
-  //flag_new = true;
   flag_vth = false;
+  slider_end();
 });
+
+
+function slider_start():void {
+  update_ch1 = true;
+  update_ch2 = true;
+}
+
+function slider_end():void {
+  if (run_single) {
+    update_ch1 = false;
+    update_ch2 = false;
+  }
+}
 
 
 
@@ -203,7 +187,7 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
 
 
 function update_ui():void {
-  if (play) {
+  if (update_new_ph) {
     (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
   }
   else {
@@ -226,7 +210,33 @@ function update_ui():void {
 }
 
 
+//button function
+function ctrl_run():void {
+  run_single = false;
+  update_new_ph = true;
+  update_ch1 = true;
+  update_ch2 = true;
+  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
+  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
+}
 
+function ctrl_single():void {
+  run_single = true;
+  update_new_ph = false;
+  update_ch1 = false;
+  update_ch2 = false;
+  update(true, true, true);
+
+
+  (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
+  (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "";
+  setTimeout(function() {
+    (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "";
+    (<HTMLButtonElement>document.getElementById("bt-single")).style.backgroundColor = "red";
+  }, 200);
+  
+  
+}
 
 // CH functions
 

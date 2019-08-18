@@ -3,16 +3,13 @@ var N = 1000;
 var phrate = 10;
 var tr = 0.02;
 var vth = 0.5;
-var t = nj.arange(N);
-var play = true;
 var flag_vth = false;
-var flag_new = true;
 var flag_CH1 = true;
 var flag_CH2 = false;
 var run_single = false;
-//main spad results
-var y_spad;
-var sw_y = document.getElementById("sw_y");
+var update_new_ph = true;
+var update_ch1 = true;
+var update_ch2 = false;
 //plot data
 var canv = document.getElementById("display");
 canv.width = 1000;
@@ -60,63 +57,48 @@ update_ui();
 var spad = new SPAD(1000);
 var tplot = spad.t.tolist();
 setInterval(function () {
-    if (run_single) {
-        update(false, true, true);
-        run_single = false;
-    }
-    else {
-        if (play) {
-            update(true, true, true);
-        }
-    }
+    update(update_new_ph, update_ch1, update_ch2);
 }, 100);
-//button function
-function ctrl_run() {
-    play = true;
-    document.getElementById("bt-run").style.backgroundColor = "green";
-    document.getElementById("bt-single").style.backgroundColor = "";
-}
-function ctrl_single() {
-    play = false;
-    update(true, true, true);
-    document.getElementById("bt-run").style.backgroundColor = "green";
-    document.getElementById("bt-single").style.backgroundColor = "";
-    setTimeout(function () {
-        document.getElementById("bt-run").style.backgroundColor = "";
-        document.getElementById("bt-single").style.backgroundColor = "red";
-    }, 200);
-}
 slider_tr.noUiSlider.on("update", function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
     document.getElementById("display_tr").innerHTML = tr.toString();
-    run_single = true;
+    //run_single = true;
 });
 slider_phrate.noUiSlider.on("update", function (values, handle) {
     phrate = parseFloat(values[handle]);
     document.getElementById("display_phrate").innerHTML = phrate.toString();
     spad.generate_photon(phrate);
-    run_single = true;
+    //run_single = true;
 });
 slider_vth.noUiSlider.on("update", function (values, handle) {
     vth = parseFloat(values[handle]);
     document.getElementById("display_vth").innerHTML = vth.toString();
 });
+slider_tr.noUiSlider.on("start", function (values, handle) { slider_start(); });
+slider_tr.noUiSlider.on("end", function (values, handle) { slider_end(); });
+slider_phrate.noUiSlider.on("start", function (values, handle) { slider_start(); });
+slider_phrate.noUiSlider.on("end", function (values, handle) { slider_end(); });
 slider_vth.noUiSlider.on("start", function (values, handle) {
-    //flag_vth = true;
-    //flag_new = false;
-    //play = true;
     flag_vth = true;
-    if (!play) {
-        setInterval(function () {
-            update(false, false, true);
-        }, 100);
+    if (run_single) {
+        update_ch1 = false;
+        update_ch2 = true;
     }
 });
 slider_vth.noUiSlider.on("end", function (values, handle) {
-    //flag_vth = false;
-    //flag_new = true;
     flag_vth = false;
+    slider_end();
 });
+function slider_start() {
+    update_ch1 = true;
+    update_ch2 = true;
+}
+function slider_end() {
+    if (run_single) {
+        update_ch1 = false;
+        update_ch2 = false;
+    }
+}
 //plot new set
 function update(new_photon, ch1, ch2) {
     if (new_photon) {
@@ -144,7 +126,7 @@ function update(new_photon, ch1, ch2) {
     }
 }
 function update_ui() {
-    if (play) {
+    if (update_new_ph) {
         document.getElementById("bt-run").style.backgroundColor = "green";
     }
     else {
@@ -162,6 +144,28 @@ function update_ui() {
     else {
         document.getElementById("btCH2").style.backgroundColor = "";
     }
+}
+//button function
+function ctrl_run() {
+    run_single = false;
+    update_new_ph = true;
+    update_ch1 = true;
+    update_ch2 = true;
+    document.getElementById("bt-run").style.backgroundColor = "green";
+    document.getElementById("bt-single").style.backgroundColor = "";
+}
+function ctrl_single() {
+    run_single = true;
+    update_new_ph = false;
+    update_ch1 = false;
+    update_ch2 = false;
+    update(true, true, true);
+    document.getElementById("bt-run").style.backgroundColor = "green";
+    document.getElementById("bt-single").style.backgroundColor = "";
+    setTimeout(function () {
+        document.getElementById("bt-run").style.backgroundColor = "";
+        document.getElementById("bt-single").style.backgroundColor = "red";
+    }, 200);
 }
 // CH functions
 function btCH1() {
