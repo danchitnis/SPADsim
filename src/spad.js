@@ -2,6 +2,8 @@
 //SPAD object
 //by Danial Chitnis
 //29/07/2019
+exports.__esModule = true;
+var nj = require("numjs");
 /**
  * SPAD CLass function
  */
@@ -78,6 +80,7 @@ var SPAD = /** @class */ (function () {
     };
     return SPAD;
 }());
+exports.SPAD = SPAD;
 function apply_ystep(y, i, ystep) {
     if (y.get(i - 1) > 0) {
         var a = y.get(i - 1) - ystep;

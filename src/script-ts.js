@@ -1,4 +1,8 @@
 "use strict";
+exports.__esModule = true;
+var nj = require("numjs");
+var noUiSlider = require("nouislider");
+var spad_1 = require("./spad");
 var N = 1000;
 var phrate = 10;
 var tr = 0.02;
@@ -14,9 +18,6 @@ var update_ch2 = false;
 var canv = document.getElementById("display");
 canv.width = 1000;
 canv.height = 400;
-var gr = new GR("display");
-gr.setviewport(0, 1, 0, 1);
-gr.setwindow(1, 1000, 0, 1);
 var y = nj.arange(1000);
 //gr.polyline(1000, tplot, yplot);
 var slider_tr = document.getElementById('slider_tr');
@@ -54,7 +55,7 @@ noUiSlider.create(slider_vth, {
     }
 });
 update_ui();
-var spad = new SPAD(1000);
+var spad = new spad_1.SPAD(1000);
 var tplot = spad.t.tolist();
 setInterval(function () {
     update(update_new_ph, update_ch1, update_ch2);
@@ -104,24 +105,24 @@ function update(new_photon, ch1, ch2) {
     if (new_photon) {
         spad.generate_photon(phrate);
     }
-    gr.clearws();
+    //gr.clearws();
     if (ch1) {
         spad.update_y(tr);
     }
     if (flag_CH1) {
-        gr.setlinecolorind(430);
-        gr.polyline(1000, tplot, spad.y.tolist());
+        //gr.setlinecolorind(430);
+        //gr.polyline(1000, tplot, spad.y.tolist());
     }
     if (ch2) {
         spad.update_ysq(vth);
     }
     if (flag_CH2) {
-        gr.setlinecolorind(530);
-        gr.polyline(1000, tplot, spad.ysq.tolist());
+        //gr.setlinecolorind(530);
+        //gr.polyline(1000, tplot, spad.ysq.tolist());
         if (flag_vth) {
             var y_1 = (nj.ones(1000)).multiply(vth);
-            gr.setlinecolorind(550);
-            gr.polyline(1000, tplot, y_1.tolist());
+            //gr.setlinecolorind(550);
+            //gr.polyline(1000, tplot, y.tolist());
         }
     }
 }

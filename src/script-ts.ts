@@ -1,8 +1,11 @@
 import * as nj from "numjs";
 import * as noUiSlider from "nouislider";
-import { GR } from "grframework";
 
-import { SPAD } from "./SPAD/spad";
+import * as ndarray from "ndarray";
+
+
+import { SPAD } from "./spad";
+import { webGLplot } from "./webGLplot";
 
 
 let N = 1000;
@@ -24,17 +27,20 @@ let update_new_ph = true;
 let update_ch1 = true;
 let update_ch2 = false;
 
-
-
-//plot data
 let canv = <HTMLCanvasElement>document.getElementById("display");
-canv.width = 1000;
-canv.height = 400;
 
-let gr = new GR("display");
+let devicePixelRatio = window.devicePixelRatio || 1;
+let num = Math.round(canv.clientWidth * devicePixelRatio);
 
-gr.setviewport(0, 1, 0, 1);
-gr.setwindow(1, 1000, 0, 1);
+let yscale = 1;
+let line_colors : Array<color_rgba>;
+let lines : Array<lineGroup>;
+
+let wglp = new webGLplot(canv,x)
+
+
+
+
 
 let y=nj.arange(1000);
 
@@ -157,15 +163,15 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.generate_photon(phrate);
   }
 
-  gr.clearws();
+  //gr.clearws();
   
   if (ch1) {
     spad.update_y(tr);
   }
 
   if (flag_CH1) {
-    gr.setlinecolorind(430);
-    gr.polyline(1000, tplot, spad.y.tolist());
+    //gr.setlinecolorind(430);
+    //gr.polyline(1000, tplot, spad.y.tolist());
   }
 
 
@@ -173,12 +179,12 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.update_ysq(vth);
   }
   if (flag_CH2) {
-    gr.setlinecolorind(530);
-    gr.polyline(1000, tplot, spad.ysq.tolist());
+    //gr.setlinecolorind(530);
+    //gr.polyline(1000, tplot, spad.ysq.tolist());
     if (flag_vth) {
       let y = (nj.ones(1000)).multiply(vth);
-      gr.setlinecolorind(550);
-      gr.polyline(1000, tplot, y.tolist());
+      //gr.setlinecolorind(550);
+      //gr.polyline(1000, tplot, y.tolist());
     }
   }
 
