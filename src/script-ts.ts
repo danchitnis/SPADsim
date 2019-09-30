@@ -1,11 +1,14 @@
-import * as nj from "numjs";
-import * as noUiSlider from "nouislider";
 
-import * as ndarray from "ndarray";
+import ndarray = require("ndarray");
+import { webGLplot} from "./webGLplot"
+import { color_rgba} from "./webGLplot"
+import { lineGroup } from "./webGLplot"
+import * as noUiSlider from 'nouislider';
 
 
 import { SPAD } from "./spad";
-import { webGLplot } from "./webGLplot";
+
+
 
 
 let N = 1000;
@@ -33,16 +36,28 @@ let devicePixelRatio = window.devicePixelRatio || 1;
 let num = Math.round(canv.clientWidth * devicePixelRatio);
 
 let yscale = 1;
-let line_colors : Array<color_rgba>;
-let lines : Array<lineGroup>;
-
-let wglp = new webGLplot(canv,x)
 
 
+let wglp = new webGLplot(canv);
+
+let xy = ndarray(new Float32Array(num*2), [num, 2]);
+
+for (let i=0; i<num; i++) {
+  //set x to -num/2:1:+num/2
+  xy.set(i, 0, 2*i/num-1);
+  xy.set(i, 1, i/num);
+}
+
+console.log(xy);
+
+let color = new color_rgba(0,1,0,1);
+
+let line = new lineGroup(color, xy);
+wglp.add_line(line);
+wglp.update();
 
 
 
-let y=nj.arange(1000);
 
 
 
@@ -182,7 +197,7 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     //gr.setlinecolorind(530);
     //gr.polyline(1000, tplot, spad.ysq.tolist());
     if (flag_vth) {
-      let y = (nj.ones(1000)).multiply(vth);
+      //let y = (nj.ones(1000)).multiply(vth);
       //gr.setlinecolorind(550);
       //gr.polyline(1000, tplot, y.tolist());
     }

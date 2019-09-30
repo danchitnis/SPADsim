@@ -1,6 +1,9 @@
 "use strict";
 exports.__esModule = true;
-var nj = require("numjs");
+var ndarray = require("ndarray");
+var webGLplot_1 = require("./webGLplot");
+var webGLplot_2 = require("./webGLplot");
+var webGLplot_3 = require("./webGLplot");
 var noUiSlider = require("nouislider");
 var spad_1 = require("./spad");
 var N = 1000;
@@ -14,11 +17,22 @@ var run_single = false;
 var update_new_ph = true;
 var update_ch1 = true;
 var update_ch2 = false;
-//plot data
 var canv = document.getElementById("display");
-canv.width = 1000;
-canv.height = 400;
-var y = nj.arange(1000);
+var devicePixelRatio = window.devicePixelRatio || 1;
+var num = Math.round(canv.clientWidth * devicePixelRatio);
+var yscale = 1;
+var wglp = new webGLplot_1.webGLplot(canv);
+var xy = ndarray(new Float32Array(num * 2), [num, 2]);
+for (var i = 0; i < num; i++) {
+    //set x to -num/2:1:+num/2
+    xy.set(i, 0, 2 * i / num - 1);
+    xy.set(i, 1, i / num);
+}
+console.log(xy);
+var color = new webGLplot_2.color_rgba(0, 1, 0, 1);
+var line = new webGLplot_3.lineGroup(color, xy);
+wglp.add_line(line);
+wglp.update();
 //gr.polyline(1000, tplot, yplot);
 var slider_tr = document.getElementById('slider_tr');
 var slider_phrate = document.getElementById("slider_phrate");
@@ -120,7 +134,7 @@ function update(new_photon, ch1, ch2) {
         //gr.setlinecolorind(530);
         //gr.polyline(1000, tplot, spad.ysq.tolist());
         if (flag_vth) {
-            var y_1 = (nj.ones(1000)).multiply(vth);
+            //let y = (nj.ones(1000)).multiply(vth);
             //gr.setlinecolorind(550);
             //gr.polyline(1000, tplot, y.tolist());
         }

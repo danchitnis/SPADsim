@@ -6,7 +6,7 @@
  * https://www.tutorialspoint.com/webgl/webgl_modes_of_drawing.htm
  */
 
-import ndarray = require("ndarray");
+import * as ndarray from "ndarray";
 
 
 export class color_rgba {
@@ -31,16 +31,21 @@ export class lineGroup {
    vbuffer: WebGLBuffer;
    prog: WebGLProgram;
 
-   constructor(c: color_rgba) {
+   constructor(c: color_rgba, xy:ndarray) {
       this.color = c;
+      this.num_points = xy.shape[0];
+      this.xy = xy;
+      this.vbuffer = 0;
+      this.prog = 0;
+
    }
 }
 
 
 export class webGLplot {
-    num_points:number;
+
     gl:WebGLRenderingContext;
-    color: color_rgba;
+
     scaleX: number;
     scaleY: number;
 
@@ -53,7 +58,7 @@ export class webGLplot {
      * @param canv 
      * @param array 
      */
-    constructor(canv:HTMLCanvasElement, linegroups: lineGroup[]) {
+    constructor(canv:HTMLCanvasElement) {
        
       let devicePixelRatio = window.devicePixelRatio || 1;
  
@@ -66,58 +71,14 @@ export class webGLplot {
          transparent: false
       });
 
+      this.linegroups = [];
+
       this.gl = gl;
-      this.linegroups = linegroups;
+
       this.scaleX = 1;
       this.scaleY = 1;
       
  
-      linegroups.forEach(lg => {
-         lg.num_points = lg.xy.shape[0];
-         lg.vbuffer = gl.createBuffer();
-         gl.bindBuffer(gl.ARRAY_BUFFER, lg.vbuffer);
-         gl.bufferData(gl.ARRAY_BUFFER, <ArrayBuffer>lg.xy, gl.STREAM_DRAW);
-
-         let vertCode = `
-         attribute vec2 coordinates;
-         uniform mat2 uscale;
-         void main(void) {
-            gl_Position = vec4(uscale*coordinates, 0.0, 1.0);
-         }`;
-
-         // Create a vertex shader object
-         let vertShader = gl.createShader(gl.VERTEX_SHADER);
-
-         // Attach vertex shader source code
-         gl.shaderSource(vertShader, vertCode);
-
-         // Compile the vertex shader
-         gl.compileShader(vertShader);
-
-         // Fragment shader source code
-         let fragCode = `
-            void main(void) {
-               gl_FragColor = vec4(${lg.color.r}, ${lg.color.g}, ${lg.color.b}, ${lg.color.a});
-            }`;
-         
-
-         let fragShader = gl.createShader(gl.FRAGMENT_SHADER);
-         gl.shaderSource(fragShader, fragCode);
-         gl.compileShader(fragShader);
-         lg.prog = gl.createProgram();
-         gl.attachShader(lg.prog, vertShader);
-         gl.attachShader(lg.prog, fragShader);
-         gl.linkProgram(lg.prog);
-
-         gl.bindBuffer(gl.ARRAY_BUFFER, lg.vbuffer);
-         
-         let coord = gl.getAttribLocation(lg.prog, "coordinates");
-         gl.vertexAttribPointer(coord, 2, gl.FLOAT, false, 0, 0);
-         gl.enableVertexAttribArray(coord);
-
-
-      });
-
  
       // Clear the canvas  //??????????????????
       gl.clearColor(0.1, 0.1, 0.1, 1.0);
@@ -154,9 +115,56 @@ export class webGLplot {
 
    }
 
-   viewport(a:number, b:number, c:number, d:number) {
-      this.gl.viewport(a, b, c, d);
+   add_line(line:lineGroup) {
+      
+
+      line.num_points = line.xy.shape[0];
+      line.vbuffer = <WebGLBuffer>this.gl.createBuffer();
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, line.vbuffer);
+      this.gl.bufferData(this.gl.ARRAY_BUFFER, <ArrayBuffer>line.xy.data, this.gl.STREAM_DRAW);
+
+      let vertCode = `
+      attribute vec2 coordinates;
+      uniform mat2 uscale;
+      void main(void) {
+         gl_Position = vec4(uscale*coordinates, 0.0, 1.0);
+      }`;
+
+      // Create a vertex shader object
+      let vertShader = this.gl.createShader(this.gl.VERTEX_SHADER);
+
+      // Attach vertex shader source code
+      this.gl.shaderSource(<WebGLShader>vertShader, vertCode);
+
+      // Compile the vertex shader
+      this.gl.compileShader(<WebGLShader>vertShader);
+
+      // Fragment shader source code
+      let fragCode = `
+         void main(void) {
+            gl_FragColor = vec4(${line.color.r}, ${line.color.g}, ${line.color.b}, ${line.color.a});
+         }`;
+      
+
+      let fragShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
+      this.gl.shaderSource(<WebGLShader>fragShader, fragCode);
+      this.gl.compileShader(<WebGLShader>fragShader);
+      line.prog = <WebGLProgram>this.gl.createProgram();
+      this.gl.attachShader(line.prog, <WebGLShader>vertShader);
+      this.gl.attachShader(line.prog, <WebGLShader>fragShader);
+      this.gl.linkProgram(line.prog);
+
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, line.vbuffer);
+      
+      let coord = this.gl.getAttribLocation(line.prog, "coordinates");
+      this.gl.vertexAttribPointer(coord, 2, this.gl.FLOAT, false, 0, 0);
+      this.gl.enableVertexAttribArray(coord);
+
+      this.linegroups.push(line);
    }
+
+
+
  }
 
 
