@@ -30,14 +30,29 @@ export class lineGroup {
    color: color_rgba;
    vbuffer: WebGLBuffer;
    prog: WebGLProgram;
+   coord: number;
 
-   constructor(c: color_rgba, xy:ndarray) {
+   constructor(c: color_rgba, num:number) {
+      this.num_points = num;
       this.color = c;
-      this.num_points = xy.shape[0];
-      this.xy = xy;
+      this.xy = ndarray(new Float32Array(this.num_points*2), [this.num_points, 2]);
       this.vbuffer = 0;
       this.prog = 0;
+      this.coord = 0;
+   }
+   
+   linespaceX() {
+      for (let i=0; i<this.num_points; i++) {
+         //set x to -num/2:1:+num/2
+         this.xy.set(i, 0, 2*i/this.num_points-1);
+       }
+   }
 
+   constY(c:number) {
+      for (let i=0; i<this.num_points; i++) {
+         //set x to -num/2:1:+num/2
+         this.xy.set(i, 1, c);
+       }
    }
 }
 
@@ -97,7 +112,7 @@ export class webGLplot {
    /**
    * update
    */
-   update() {
+   update_add() {
       let gl = this.gl;
 
       this.linegroups.forEach(lg => {
@@ -113,6 +128,12 @@ export class webGLplot {
 
       });
 
+   }
+
+   clear() {
+      // Clear the canvas  //??????????????????
+      this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
+      this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
    }
 
    add_line(line:lineGroup) {
@@ -156,9 +177,9 @@ export class webGLplot {
 
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, line.vbuffer);
       
-      let coord = this.gl.getAttribLocation(line.prog, "coordinates");
-      this.gl.vertexAttribPointer(coord, 2, this.gl.FLOAT, false, 0, 0);
-      this.gl.enableVertexAttribArray(coord);
+      line.coord = this.gl.getAttribLocation(line.prog, "coordinates");
+      this.gl.vertexAttribPointer(line.coord, 2, this.gl.FLOAT, false, 0, 0);
+      this.gl.enableVertexAttribArray(line.coord);
 
       this.linegroups.push(line);
    }

@@ -37,24 +37,19 @@ let num = Math.round(canv.clientWidth * devicePixelRatio);
 
 let yscale = 1;
 
+let fps_divder = 6;
+let fps_counter = 0;
+
 
 let wglp = new webGLplot(canv);
 
-let xy = ndarray(new Float32Array(num*2), [num, 2]);
+let color = new color_rgba(1,1,0,1);
+wglp.clear();
 
-for (let i=0; i<num; i++) {
-  //set x to -num/2:1:+num/2
-  xy.set(i, 0, 2*i/num-1);
-  xy.set(i, 1, i/num);
-}
-
-console.log(xy);
-
-let color = new color_rgba(0,1,0,1);
-
-let line = new lineGroup(color, xy);
+let line = new lineGroup(color, 1000);
+line.linespaceX();
 wglp.add_line(line);
-wglp.update();
+
 
 
 
@@ -106,13 +101,39 @@ update_ui();
 let spad = new SPAD(1000);
 let tplot = spad.t.tolist();
 
-setInterval(function() {
-
-  update(update_new_ph, update_ch1, update_ch2);
-
-}, 100);
+function new_frame() {
   
 
+  if (fps_counter==0) {
+    
+
+    let k = Math.random()-0.5;
+
+    //let color = new color_rgba(Math.random(),Math.random(),Math.random(),1);
+
+
+    //let line = new lineGroup(color, 1000);
+    //line.linespaceX();
+    line.constY(k);
+    //wglp.add_line(line);
+    //wglp.clear();
+    wglp.update_add();
+
+    wglp.scaleY = yscale;
+
+  
+  }
+
+  fps_counter++;
+
+  if (fps_counter >= fps_divder) {
+    fps_counter = 0;
+  }
+  
+  window.requestAnimationFrame(new_frame);
+}
+
+window.requestAnimationFrame(new_frame);
   
 
 

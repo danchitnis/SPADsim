@@ -1,6 +1,5 @@
 "use strict";
 exports.__esModule = true;
-var ndarray = require("ndarray");
 var webGLplot_1 = require("./webGLplot");
 var webGLplot_2 = require("./webGLplot");
 var webGLplot_3 = require("./webGLplot");
@@ -21,18 +20,14 @@ var canv = document.getElementById("display");
 var devicePixelRatio = window.devicePixelRatio || 1;
 var num = Math.round(canv.clientWidth * devicePixelRatio);
 var yscale = 1;
+var fps_divder = 6;
+var fps_counter = 0;
 var wglp = new webGLplot_1.webGLplot(canv);
-var xy = ndarray(new Float32Array(num * 2), [num, 2]);
-for (var i = 0; i < num; i++) {
-    //set x to -num/2:1:+num/2
-    xy.set(i, 0, 2 * i / num - 1);
-    xy.set(i, 1, i / num);
-}
-console.log(xy);
-var color = new webGLplot_2.color_rgba(0, 1, 0, 1);
-var line = new webGLplot_3.lineGroup(color, xy);
+var color = new webGLplot_2.color_rgba(1, 1, 0, 1);
+wglp.clear();
+var line = new webGLplot_3.lineGroup(color, 1000);
+line.linespaceX();
 wglp.add_line(line);
-wglp.update();
 //gr.polyline(1000, tplot, yplot);
 var slider_tr = document.getElementById('slider_tr');
 var slider_phrate = document.getElementById("slider_phrate");
@@ -71,9 +66,25 @@ noUiSlider.create(slider_vth, {
 update_ui();
 var spad = new spad_1.SPAD(1000);
 var tplot = spad.t.tolist();
-setInterval(function () {
-    update(update_new_ph, update_ch1, update_ch2);
-}, 100);
+function new_frame() {
+    if (fps_counter == 0) {
+        var k = Math.random() - 0.5;
+        //let color = new color_rgba(Math.random(),Math.random(),Math.random(),1);
+        //let line = new lineGroup(color, 1000);
+        //line.linespaceX();
+        line.constY(k);
+        //wglp.add_line(line);
+        //wglp.clear();
+        wglp.update_add();
+        wglp.scaleY = yscale;
+    }
+    fps_counter++;
+    if (fps_counter >= fps_divder) {
+        fps_counter = 0;
+    }
+    window.requestAnimationFrame(new_frame);
+}
+window.requestAnimationFrame(new_frame);
 slider_tr.noUiSlider.on("update", function (values, handle) {
     tr = parseFloat(values[handle]) / 10;
     document.getElementById("display_tr").innerHTML = tr.toString();

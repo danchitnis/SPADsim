@@ -7,6 +7,7 @@
  * https://www.tutorialspoint.com/webgl/webgl_modes_of_drawing.htm
  */
 exports.__esModule = true;
+var ndarray = require("ndarray");
 var color_rgba = /** @class */ (function () {
     function color_rgba(r, g, b, a) {
         this.r = r;
@@ -18,13 +19,26 @@ var color_rgba = /** @class */ (function () {
 }());
 exports.color_rgba = color_rgba;
 var lineGroup = /** @class */ (function () {
-    function lineGroup(c, xy) {
+    function lineGroup(c, num) {
+        this.num_points = num;
         this.color = c;
-        this.num_points = xy.shape[0];
-        this.xy = xy;
+        this.xy = ndarray(new Float32Array(this.num_points * 2), [this.num_points, 2]);
         this.vbuffer = 0;
         this.prog = 0;
+        this.coord = 0;
     }
+    lineGroup.prototype.linespaceX = function () {
+        for (var i = 0; i < this.num_points; i++) {
+            //set x to -num/2:1:+num/2
+            this.xy.set(i, 0, 2 * i / this.num_points - 1);
+        }
+    };
+    lineGroup.prototype.constY = function (c) {
+        for (var i = 0; i < this.num_points; i++) {
+            //set x to -num/2:1:+num/2
+            this.xy.set(i, 1, c);
+        }
+    };
     return lineGroup;
 }());
 exports.lineGroup = lineGroup;
@@ -59,7 +73,7 @@ var webGLplot = /** @class */ (function () {
     /**
     * update
     */
-    webGLplot.prototype.update = function () {
+    webGLplot.prototype.update_add = function () {
         var _this = this;
         var gl = this.gl;
         this.linegroups.forEach(function (lg) {
@@ -69,6 +83,11 @@ var webGLplot = /** @class */ (function () {
             gl.bufferData(gl.ARRAY_BUFFER, lg.xy.data, gl.STREAM_DRAW);
             gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
         });
+    };
+    webGLplot.prototype.clear = function () {
+        // Clear the canvas  //??????????????????
+        this.gl.clearColor(0.1, 0.1, 0.1, 1.0);
+        this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
     };
     webGLplot.prototype.add_line = function (line) {
         line.num_points = line.xy.shape[0];
@@ -92,9 +111,9 @@ var webGLplot = /** @class */ (function () {
         this.gl.attachShader(line.prog, fragShader);
         this.gl.linkProgram(line.prog);
         this.gl.bindBuffer(this.gl.ARRAY_BUFFER, line.vbuffer);
-        var coord = this.gl.getAttribLocation(line.prog, "coordinates");
-        this.gl.vertexAttribPointer(coord, 2, this.gl.FLOAT, false, 0, 0);
-        this.gl.enableVertexAttribArray(coord);
+        line.coord = this.gl.getAttribLocation(line.prog, "coordinates");
+        this.gl.vertexAttribPointer(line.coord, 2, this.gl.FLOAT, false, 0, 0);
+        this.gl.enableVertexAttribArray(line.coord);
         this.linegroups.push(line);
     };
     return webGLplot;
