@@ -47,11 +47,13 @@ wglp.clear();
 
 
 let color = new color_rgba(0,1,1,1);
-let line = new lineGroup(color, 1000);
-line.linespaceX();
-wglp.add_line(line);
+let line_y = new lineGroup(color, 1000);
+line_y.linespaceX();
+wglp.add_line(line_y);
 
-
+let line_sq = new lineGroup(new color_rgba(0,1,0,1), 1000);
+line_sq.linespaceX();
+wglp.add_line(line_sq/);
 
 
 

@@ -54,6 +54,10 @@ export class lineGroup {
          this.xy.set(i, 1, c);
        }
    }
+
+   hide() {
+      //hide line
+   }
 }
 
 
