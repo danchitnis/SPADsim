@@ -23,8 +23,8 @@ var yscale = 1;
 var fps_divder = 6;
 var fps_counter = 0;
 var wglp = new webGLplot_1.webGLplot(canv);
-var color = new webGLplot_2.color_rgba(1, 1, 0, 1);
 wglp.clear();
+var color = new webGLplot_2.color_rgba(0, 1, 1, 1);
 var line = new webGLplot_3.lineGroup(color, 1000);
 line.linespaceX();
 wglp.add_line(line);
@@ -63,18 +63,18 @@ noUiSlider.create(slider_vth, {
         max: 1
     }
 });
+document.getElementById("bt-run").addEventListener("onclick", ctrl_run);
+document.getElementById("bt-single").addEventListener("onclick", ctrl_single);
 update_ui();
 var spad = new spad_1.SPAD(1000);
 var tplot = spad.t.tolist();
 function new_frame() {
     if (fps_counter == 0) {
-        var k = Math.random() - 0.5;
-        //let color = new color_rgba(Math.random(),Math.random(),Math.random(),1);
-        //let line = new lineGroup(color, 1000);
-        //line.linespaceX();
-        line.constY(k);
-        //wglp.add_line(line);
-        //wglp.clear();
+        update(true, true, false);
+        wglp.linegroups.forEach(function (line) {
+            //
+        });
+        wglp.clear();
         wglp.update_add();
         wglp.scaleY = yscale;
     }
@@ -135,6 +135,9 @@ function update(new_photon, ch1, ch2) {
         spad.update_y(tr);
     }
     if (flag_CH1) {
+        for (var i = 0; i < 1000; i++) {
+            line.xy.set(i, 1, 1.9 * spad.y.get(i, 0) - 0.9);
+        }
         //gr.setlinecolorind(430);
         //gr.polyline(1000, tplot, spad.y.tolist());
     }
@@ -181,6 +184,7 @@ function ctrl_run() {
     document.getElementById("bt-single").style.backgroundColor = "";
 }
 function ctrl_single() {
+    console.log("hello!");
     run_single = true;
     update_new_ph = false;
     update_ch1 = false;

@@ -18,7 +18,6 @@ let vth = 0.5;
 
 
 
-
 let flag_vth = false;
 
 let flag_CH1 = true;
@@ -43,12 +42,17 @@ let fps_counter = 0;
 
 let wglp = new webGLplot(canv);
 
-let color = new color_rgba(1,1,0,1);
+
 wglp.clear();
 
+
+let color = new color_rgba(0,1,1,1);
 let line = new lineGroup(color, 1000);
 line.linespaceX();
 wglp.add_line(line);
+
+
+
 
 
 
@@ -94,6 +98,8 @@ noUiSlider.create(slider_vth, {
     }
 });
 
+document.getElementById("bt-run").addEventListener("onclick",ctrl_run);
+document.getElementById("bt-single").addEventListener("onclick",ctrl_single);
 
 
 update_ui();
@@ -106,22 +112,17 @@ function new_frame() {
 
   if (fps_counter==0) {
     
+    update(true, true, false);
+    wglp.linegroups.forEach(line => {
+      //
 
-    let k = Math.random()-0.5;
-
-    //let color = new color_rgba(Math.random(),Math.random(),Math.random(),1);
-
-
-    //let line = new lineGroup(color, 1000);
-    //line.linespaceX();
-    line.constY(k);
-    //wglp.add_line(line);
-    //wglp.clear();
+    });
+    
+    wglp.clear();
     wglp.update_add();
 
     wglp.scaleY = yscale;
 
-  
   }
 
   fps_counter++;
@@ -206,6 +207,9 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
   }
 
   if (flag_CH1) {
+    for (let i=0;i<1000;i++) {
+      line.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
+    }
     //gr.setlinecolorind(430);
     //gr.polyline(1000, tplot, spad.y.tolist());
   }
@@ -252,6 +256,7 @@ function update_ui():void {
 }
 
 
+
 //button function
 function ctrl_run():void {
   run_single = false;
@@ -263,11 +268,15 @@ function ctrl_run():void {
 }
 
 function ctrl_single():void {
+  console.log("hello!");
+  
   run_single = true;
   update_new_ph = false;
   update_ch1 = false;
   update_ch2 = false;
   update(true, true, true);
+
+  
 
 
   (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
