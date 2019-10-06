@@ -39,6 +39,9 @@ var lineGroup = /** @class */ (function () {
             this.xy.set(i, 1, c);
         }
     };
+    lineGroup.prototype.hide = function () {
+        //hide line
+    };
     return lineGroup;
 }());
 exports.lineGroup = lineGroup;

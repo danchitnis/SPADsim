@@ -51,9 +51,13 @@ let line_y = new lineGroup(color, 1000);
 line_y.linespaceX();
 wglp.add_line(line_y);
 
-let line_sq = new lineGroup(new color_rgba(0,1,0,1), 1000);
-line_sq.linespaceX();
-wglp.add_line(line_sq/);
+let line_ysq = new lineGroup(new color_rgba(0,1,0,1), 1000);
+line_ysq.linespaceX();
+wglp.add_line(line_ysq);
+
+let line_vth = new lineGroup(new color_rgba(1,1,0,1), 1000);
+line_vth.linespaceX();
+wglp.add_line(line_vth);
 
 
 
@@ -116,7 +120,7 @@ function new_frame() {
 
   if (fps_counter==0) {
     
-    update(true, true, false);
+    update(true, true, true);
     wglp.linegroups.forEach(line => {
       //
 
@@ -212,7 +216,7 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
 
   if (flag_CH1) {
     for (let i=0;i<1000;i++) {
-      line.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
+      line_y.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
     }
     //gr.setlinecolorind(430);
     //gr.polyline(1000, tplot, spad.y.tolist());
@@ -223,10 +227,15 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.update_ysq(vth);
   }
   if (flag_CH2) {
+    for (let i=0;i<1000;i++) {
+      line_ysq.xy.set(i,1,1.9*spad.ysq.get(i,0)-0.9);
+    }
     //gr.setlinecolorind(530);
     //gr.polyline(1000, tplot, spad.ysq.tolist());
     if (flag_vth) {
-      //let y = (nj.ones(1000)).multiply(vth);
+      for (let i=0;i<1000;i++) {
+        line_vth.constY(1.9*vth-0.9);
+      }
       //gr.setlinecolorind(550);
       //gr.polyline(1000, tplot, y.tolist());
     }
