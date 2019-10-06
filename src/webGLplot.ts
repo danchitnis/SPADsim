@@ -28,6 +28,7 @@ export class lineGroup {
    num_points: number;
    xy: ndarray;
    color: color_rgba;
+   intenisty: number;
    vbuffer: WebGLBuffer;
    prog: WebGLProgram;
    coord: number;
@@ -35,6 +36,7 @@ export class lineGroup {
    constructor(c: color_rgba, num:number) {
       this.num_points = num;
       this.color = c;
+      this.intenisty = 1;
       this.xy = ndarray(new Float32Array(this.num_points*2), [this.num_points, 2]);
       this.vbuffer = 0;
       this.prog = 0;
@@ -56,7 +58,11 @@ export class lineGroup {
    }
 
    hide() {
-      //hide line
+      this.color = new color_rgba(0.1,0.1,0.1,1);
+   }
+
+   show() {
+      this.color = new color_rgba(1,0.1,0.1,1);
    }
 }
 
@@ -100,6 +106,7 @@ export class webGLplot {
  
  
       // Clear the canvas  //??????????????????
+      //gl.clearColor(0.1, 0.1, 0.1, 1.0);
       gl.clearColor(0.1, 0.1, 0.1, 1.0);
 
       // Enable the depth test
@@ -124,6 +131,9 @@ export class webGLplot {
 
          let uscale = gl.getUniformLocation(lg.prog, 'uscale');
          gl.uniformMatrix2fv(uscale, false, new Float32Array([this.scaleX,0, 0,this.scaleY]));
+
+         let uColor = gl.getUniformLocation(lg.prog,'uColor');
+         gl.uniform4fv(uColor, [lg.intenisty*lg.color.r, lg.intenisty*lg.color.g, lg.intenisty*lg.color.b, lg.color.a]);
 
          gl.bufferData(gl.ARRAY_BUFFER, <ArrayBuffer>lg.xy.data, gl.STREAM_DRAW);
 
@@ -166,8 +176,10 @@ export class webGLplot {
 
       // Fragment shader source code
       let fragCode = `
+         precision mediump float;
+         uniform highp vec4 uColor;
          void main(void) {
-            gl_FragColor = vec4(${line.color.r}, ${line.color.g}, ${line.color.b}, ${line.color.a});
+            gl_FragColor =  uColor;
          }`;
       
 

@@ -22,6 +22,7 @@ var lineGroup = /** @class */ (function () {
     function lineGroup(c, num) {
         this.num_points = num;
         this.color = c;
+        this.intenisty = 1;
         this.xy = ndarray(new Float32Array(this.num_points * 2), [this.num_points, 2]);
         this.vbuffer = 0;
         this.prog = 0;
@@ -40,7 +41,10 @@ var lineGroup = /** @class */ (function () {
         }
     };
     lineGroup.prototype.hide = function () {
-        //hide line
+        this.color = new color_rgba(0.1, 0.1, 0.1, 1);
+    };
+    lineGroup.prototype.show = function () {
+        this.color = new color_rgba(1, 0.1, 0.1, 1);
     };
     return lineGroup;
 }());
@@ -65,6 +69,7 @@ var webGLplot = /** @class */ (function () {
         this.scaleX = 1;
         this.scaleY = 1;
         // Clear the canvas  //??????????????????
+        //gl.clearColor(0.1, 0.1, 0.1, 1.0);
         gl.clearColor(0.1, 0.1, 0.1, 1.0);
         // Enable the depth test
         gl.enable(gl.DEPTH_TEST);
@@ -83,6 +88,8 @@ var webGLplot = /** @class */ (function () {
             gl.useProgram(lg.prog);
             var uscale = gl.getUniformLocation(lg.prog, 'uscale');
             gl.uniformMatrix2fv(uscale, false, new Float32Array([_this.scaleX, 0, 0, _this.scaleY]));
+            var uColor = gl.getUniformLocation(lg.prog, 'uColor');
+            gl.uniform4fv(uColor, [lg.intenisty * lg.color.r, lg.intenisty * lg.color.g, lg.intenisty * lg.color.b, lg.color.a]);
             gl.bufferData(gl.ARRAY_BUFFER, lg.xy.data, gl.STREAM_DRAW);
             gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
         });
@@ -105,7 +112,7 @@ var webGLplot = /** @class */ (function () {
         // Compile the vertex shader
         this.gl.compileShader(vertShader);
         // Fragment shader source code
-        var fragCode = "\n         void main(void) {\n            gl_FragColor = vec4(" + line.color.r + ", " + line.color.g + ", " + line.color.b + ", " + line.color.a + ");\n         }";
+        var fragCode = "\n         precision mediump float;\n         uniform highp vec4 uColor;\n         void main(void) {\n            gl_FragColor =  uColor;\n         }";
         var fragShader = this.gl.createShader(this.gl.FRAGMENT_SHADER);
         this.gl.shaderSource(fragShader, fragCode);
         this.gl.compileShader(fragShader);
