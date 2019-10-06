@@ -98,8 +98,10 @@ noUiSlider.create(slider_vth, {
     }
 });
 
-document.getElementById("bt-run").addEventListener("onclick",ctrl_run);
-document.getElementById("bt-single").addEventListener("onclick",ctrl_single);
+document.getElementById("bt-run").addEventListener("click",ctrl_run);
+document.getElementById("bt-single").addEventListener("click",ctrl_single);
+document.getElementById("btCH1").addEventListener("click",btCH1);
+document.getElementById("btCH2").addEventListener("click",btCH2);
 
 
 update_ui();
