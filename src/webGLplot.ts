@@ -32,6 +32,9 @@ export class lineGroup {
    vbuffer: WebGLBuffer;
    prog: WebGLProgram;
    coord: number;
+   visible: boolean;
+
+   private _present_color: color_rgba;
 
    constructor(c: color_rgba, num:number) {
       this.num_points = num;
@@ -41,6 +44,7 @@ export class lineGroup {
       this.vbuffer = 0;
       this.prog = 0;
       this.coord = 0;
+      this.visible = true;
    }
    
    linespaceX() {
@@ -57,12 +61,9 @@ export class lineGroup {
        }
    }
 
-   hide() {
-      this.color = new color_rgba(0.1,0.1,0.1,1);
-   }
 
-   show() {
-      this.color = new color_rgba(1,0.1,0.1,1);
+   present_color():color_rgba {
+      return this.color;
    }
 }
 
@@ -123,23 +124,24 @@ export class webGLplot {
    /**
    * update
    */
-   update_add() {
+   update() {
       let gl = this.gl;
 
       this.linegroups.forEach(lg => {
-         gl.useProgram(lg.prog);
+         if (lg.visible) {
+            gl.useProgram(lg.prog);
 
-         let uscale = gl.getUniformLocation(lg.prog, 'uscale');
-         gl.uniformMatrix2fv(uscale, false, new Float32Array([this.scaleX,0, 0,this.scaleY]));
+            let uscale = gl.getUniformLocation(lg.prog, 'uscale');
+            gl.uniformMatrix2fv(uscale, false, new Float32Array([this.scaleX,0, 0,this.scaleY]));
 
-         let uColor = gl.getUniformLocation(lg.prog,'uColor');
-         gl.uniform4fv(uColor, [lg.intenisty*lg.color.r, lg.intenisty*lg.color.g, lg.intenisty*lg.color.b, lg.color.a]);
+            let uColor = gl.getUniformLocation(lg.prog,'uColor');
+            gl.uniform4fv(uColor, [lg.present_color().r, lg.present_color().g, lg.present_color().b, lg.present_color().a]);
 
-         gl.bufferData(gl.ARRAY_BUFFER, <ArrayBuffer>lg.xy.data, gl.STREAM_DRAW);
+            gl.bufferData(gl.ARRAY_BUFFER, <ArrayBuffer>lg.xy.data, gl.STREAM_DRAW);
 
-
-         gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
-
+            gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
+         }
+         
       });
 
    }

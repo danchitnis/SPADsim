@@ -49,18 +49,19 @@ wglp.clear();
 let color = new color_rgba(0,1,1,1);
 let line_y = new lineGroup(color, 1000);
 line_y.linespaceX();
-line_y.hide();
+line_y.visible = false;
 wglp.add_line(line_y);
 
 let line_ysq = new lineGroup(new color_rgba(0,1,0,1), 1000);
 line_ysq.linespaceX();
-line_ysq.hide();
+line_ysq.visible = false;
 wglp.add_line(line_ysq);
 
 let line_vth = new lineGroup(new color_rgba(1,1,0,1), 1000);
 line_vth.linespaceX();
-line_vth.hide();
+line_vth.visible = false;
 wglp.add_line(line_vth);
+
 
 
 
@@ -124,7 +125,7 @@ function new_frame() {
     });
     
     wglp.clear();
-    wglp.update_add();
+    wglp.update();
 
     wglp.scaleY = yscale;
 
@@ -211,7 +212,6 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
   }
 
   if (flag_CH1) {
-    line_y.show();
     for (let i=0;i<1000;i++) {
       line_y.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
     }
@@ -222,17 +222,18 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.update_ysq(vth);
   }
   if (flag_CH2) {
-    line_ysq.show();
     for (let i=0;i<1000;i++) {
       line_ysq.xy.set(i,1,1.9*spad.ysq.get(i,0)-0.9);
     }
 
     if (flag_vth) {
-      line_vth.show();
+      line_vth.visible = true;
       for (let i=0;i<1000;i++) {
         line_vth.constY(1.9*vth-0.9);
       }
-
+    }
+    else {
+      line_vth.visible = false;
     }
   }
 
@@ -304,11 +305,11 @@ function btCH1() {
   if (flag_CH1) {
     flag_CH1 = false;
     bt.style.backgroundColor = "";
-    line_y.hide();
+    line_y.visible = false;
   } else {
     flag_CH1 = true;
     bt.style.backgroundColor = "Yellow";
-    line_y.show();
+    line_y.visible = true;
   }
 }
 
@@ -318,9 +319,11 @@ function btCH2() {
     flag_CH2 = false;
     slider_vth.setAttribute("disabled", "true");
     bt.style.backgroundColor = "";
+    line_ysq.visible = false;
   } else {
     flag_CH2 = true;
     slider_vth.removeAttribute("disabled");
     bt.style.backgroundColor = "lightgreen";
+    line_ysq.visible = true;
   }
 }

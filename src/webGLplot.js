@@ -27,6 +27,7 @@ var lineGroup = /** @class */ (function () {
         this.vbuffer = 0;
         this.prog = 0;
         this.coord = 0;
+        this.visible = true;
     }
     lineGroup.prototype.linespaceX = function () {
         for (var i = 0; i < this.num_points; i++) {
@@ -40,11 +41,8 @@ var lineGroup = /** @class */ (function () {
             this.xy.set(i, 1, c);
         }
     };
-    lineGroup.prototype.hide = function () {
-        this.color = new color_rgba(0.1, 0.1, 0.1, 1);
-    };
-    lineGroup.prototype.show = function () {
-        this.color = new color_rgba(1, 0.1, 0.1, 1);
+    lineGroup.prototype.present_color = function () {
+        return this.color;
     };
     return lineGroup;
 }());
@@ -81,17 +79,19 @@ var webGLplot = /** @class */ (function () {
     /**
     * update
     */
-    webGLplot.prototype.update_add = function () {
+    webGLplot.prototype.update = function () {
         var _this = this;
         var gl = this.gl;
         this.linegroups.forEach(function (lg) {
-            gl.useProgram(lg.prog);
-            var uscale = gl.getUniformLocation(lg.prog, 'uscale');
-            gl.uniformMatrix2fv(uscale, false, new Float32Array([_this.scaleX, 0, 0, _this.scaleY]));
-            var uColor = gl.getUniformLocation(lg.prog, 'uColor');
-            gl.uniform4fv(uColor, [lg.intenisty * lg.color.r, lg.intenisty * lg.color.g, lg.intenisty * lg.color.b, lg.color.a]);
-            gl.bufferData(gl.ARRAY_BUFFER, lg.xy.data, gl.STREAM_DRAW);
-            gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
+            if (lg.visible) {
+                gl.useProgram(lg.prog);
+                var uscale = gl.getUniformLocation(lg.prog, 'uscale');
+                gl.uniformMatrix2fv(uscale, false, new Float32Array([_this.scaleX, 0, 0, _this.scaleY]));
+                var uColor = gl.getUniformLocation(lg.prog, 'uColor');
+                gl.uniform4fv(uColor, [lg.present_color().r, lg.present_color().g, lg.present_color().b, lg.present_color().a]);
+                gl.bufferData(gl.ARRAY_BUFFER, lg.xy.data, gl.STREAM_DRAW);
+                gl.drawArrays(gl.LINE_STRIP, 0, lg.num_points);
+            }
         });
     };
     webGLplot.prototype.clear = function () {

@@ -27,15 +27,15 @@ wglp.clear();
 var color = new webGLplot_2.color_rgba(0, 1, 1, 1);
 var line_y = new webGLplot_3.lineGroup(color, 1000);
 line_y.linespaceX();
-line_y.hide();
+line_y.visible = false;
 wglp.add_line(line_y);
 var line_ysq = new webGLplot_3.lineGroup(new webGLplot_2.color_rgba(0, 1, 0, 1), 1000);
 line_ysq.linespaceX();
-line_ysq.hide();
+line_ysq.visible = false;
 wglp.add_line(line_ysq);
 var line_vth = new webGLplot_3.lineGroup(new webGLplot_2.color_rgba(1, 1, 0, 1), 1000);
 line_vth.linespaceX();
-line_vth.hide();
+line_vth.visible = false;
 wglp.add_line(line_vth);
 var slider_tr = document.getElementById('slider_tr');
 var slider_phrate = document.getElementById("slider_phrate");
@@ -85,7 +85,7 @@ function new_frame() {
             //
         });
         wglp.clear();
-        wglp.update_add();
+        wglp.update();
         wglp.scaleY = yscale;
     }
     fps_counter++;
@@ -144,7 +144,6 @@ function update(new_photon, ch1, ch2) {
         spad.update_y(tr);
     }
     if (flag_CH1) {
-        line_y.show();
         for (var i = 0; i < 1000; i++) {
             line_y.xy.set(i, 1, 1.9 * spad.y.get(i, 0) - 0.9);
         }
@@ -153,15 +152,17 @@ function update(new_photon, ch1, ch2) {
         spad.update_ysq(vth);
     }
     if (flag_CH2) {
-        line_ysq.show();
         for (var i = 0; i < 1000; i++) {
             line_ysq.xy.set(i, 1, 1.9 * spad.ysq.get(i, 0) - 0.9);
         }
         if (flag_vth) {
-            line_vth.show();
+            line_vth.visible = true;
             for (var i = 0; i < 1000; i++) {
                 line_vth.constY(1.9 * vth - 0.9);
             }
+        }
+        else {
+            line_vth.visible = false;
         }
     }
 }
@@ -214,12 +215,12 @@ function btCH1() {
     if (flag_CH1) {
         flag_CH1 = false;
         bt.style.backgroundColor = "";
-        line_y.hide();
+        line_y.visible = false;
     }
     else {
         flag_CH1 = true;
         bt.style.backgroundColor = "Yellow";
-        line_y.show();
+        line_y.visible = true;
     }
 }
 function btCH2() {
@@ -228,10 +229,12 @@ function btCH2() {
         flag_CH2 = false;
         slider_vth.setAttribute("disabled", "true");
         bt.style.backgroundColor = "";
+        line_ysq.visible = false;
     }
     else {
         flag_CH2 = true;
         slider_vth.removeAttribute("disabled");
         bt.style.backgroundColor = "lightgreen";
+        line_ysq.visible = true;
     }
 }
