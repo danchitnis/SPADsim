@@ -1,6 +1,6 @@
 {
   "name": "spadsim",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "SPAD simulator",
   "main": "index.js",
   "dependencies": {
@@ -9,11 +9,12 @@
     "@types/numjs": "^0.14.4",
     "ndarray": "^1.0.18",
     "nouislider": "^14.0.2",
-    "numjs": "^0.16.0"
+    "numjs": "^0.16.0",
+    "webgl-plot": "^0.1.3"
   },
   "devDependencies": {},
   "scripts": {
-    "build": "tsc ./src/script-ts.ts ./src/spad.ts ./src/webGLplot.ts && webpack"
+    "build": "tsc ./src/script-ts.ts ./src/spad.ts && webpack"
   },
   "repository": {
     "type": "git",
