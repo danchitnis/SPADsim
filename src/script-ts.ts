@@ -216,6 +216,9 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
         line_vth.constY(1.9*vth-0.9);
       }
     }
+    else {
+      line_vth.visible = false;
+    }
   }
 
 }

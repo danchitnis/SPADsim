@@ -151,6 +151,9 @@ function update(new_photon, ch1, ch2) {
                 line_vth.constY(1.9 * vth - 0.9);
             }
         }
+        else {
+            line_vth.visible = false;
+        }
     }
 }
 function update_ui() {
