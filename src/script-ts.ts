@@ -27,7 +27,7 @@ let run_single = false;
 
 let update_new_ph = true;
 let update_ch1 = true;
-let update_ch2 = false;
+let update_ch2 = true;
 
 let canv = <HTMLCanvasElement>document.getElementById("display");
 
@@ -40,30 +40,14 @@ let fps_divder = 6;
 let fps_counter = 0;
 
 
-let wglp = new webGLplot(canv);
+let wglp:webGLplot;
+
+let line_y:lineGroup;
+let line_ysq:lineGroup;
+let line_vth:lineGroup;
 
 
-wglp.clear();
-
-
-let color = new color_rgba(0,1,1,1);
-let line_y = new lineGroup(color, 1000);
-line_y.linespaceX();
-line_y.visible = false;
-wglp.add_line(line_y);
-
-let line_ysq = new lineGroup(new color_rgba(0,1,0,1), 1000);
-line_ysq.linespaceX();
-line_ysq.visible = false;
-wglp.add_line(line_ysq);
-
-let line_vth = new lineGroup(new color_rgba(1,1,0,1), 1000);
-line_vth.linespaceX();
-line_vth.visible = false;
-wglp.add_line(line_vth);
-
-
-
+init();
 
 
 let slider_tr = document.getElementById('slider_tr') as noUiSlider.Instance;
@@ -232,9 +216,6 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
         line_vth.constY(1.9*vth-0.9);
       }
     }
-    else {
-      line_vth.visible = false;
-    }
   }
 
 }
@@ -326,4 +307,26 @@ function btCH2() {
     bt.style.backgroundColor = "lightgreen";
     line_ysq.visible = true;
   }
+}
+
+function init() {
+  wglp = new webGLplot(canv);
+
+  wglp.clear();
+
+  let color = new color_rgba(0,1,1,1);
+  line_y = new lineGroup(color, 1000);
+  line_y.linespaceX();
+  line_y.visible = true;
+  wglp.add_line(line_y);
+
+  line_ysq = new lineGroup(new color_rgba(0,1,0,1), 1000);
+  line_ysq.linespaceX();
+  line_ysq.visible = false;
+  wglp.add_line(line_ysq);
+
+  line_vth = new lineGroup(new color_rgba(1,1,0,1), 1000);
+  line_vth.linespaceX();
+  line_vth.visible = false;
+  wglp.add_line(line_vth);
 }

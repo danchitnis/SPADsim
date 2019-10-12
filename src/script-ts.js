@@ -15,28 +15,18 @@ var flag_CH2 = false;
 var run_single = false;
 var update_new_ph = true;
 var update_ch1 = true;
-var update_ch2 = false;
+var update_ch2 = true;
 var canv = document.getElementById("display");
 var devicePixelRatio = window.devicePixelRatio || 1;
 var num = Math.round(canv.clientWidth * devicePixelRatio);
 var yscale = 1;
 var fps_divder = 6;
 var fps_counter = 0;
-var wglp = new webgl_plot_1.webGLplot(canv);
-wglp.clear();
-var color = new webgl_plot_2.color_rgba(0, 1, 1, 1);
-var line_y = new webgl_plot_3.lineGroup(color, 1000);
-line_y.linespaceX();
-line_y.visible = false;
-wglp.add_line(line_y);
-var line_ysq = new webgl_plot_3.lineGroup(new webgl_plot_2.color_rgba(0, 1, 0, 1), 1000);
-line_ysq.linespaceX();
-line_ysq.visible = false;
-wglp.add_line(line_ysq);
-var line_vth = new webgl_plot_3.lineGroup(new webgl_plot_2.color_rgba(1, 1, 0, 1), 1000);
-line_vth.linespaceX();
-line_vth.visible = false;
-wglp.add_line(line_vth);
+var wglp;
+var line_y;
+var line_ysq;
+var line_vth;
+init();
 var slider_tr = document.getElementById('slider_tr');
 var slider_phrate = document.getElementById("slider_phrate");
 ;
@@ -161,9 +151,6 @@ function update(new_photon, ch1, ch2) {
                 line_vth.constY(1.9 * vth - 0.9);
             }
         }
-        else {
-            line_vth.visible = false;
-        }
     }
 }
 function update_ui() {
@@ -237,4 +224,21 @@ function btCH2() {
         bt.style.backgroundColor = "lightgreen";
         line_ysq.visible = true;
     }
+}
+function init() {
+    wglp = new webgl_plot_1.webGLplot(canv);
+    wglp.clear();
+    var color = new webgl_plot_2.color_rgba(0, 1, 1, 1);
+    line_y = new webgl_plot_3.lineGroup(color, 1000);
+    line_y.linespaceX();
+    line_y.visible = true;
+    wglp.add_line(line_y);
+    line_ysq = new webgl_plot_3.lineGroup(new webgl_plot_2.color_rgba(0, 1, 0, 1), 1000);
+    line_ysq.linespaceX();
+    line_ysq.visible = false;
+    wglp.add_line(line_ysq);
+    line_vth = new webgl_plot_3.lineGroup(new webgl_plot_2.color_rgba(1, 1, 0, 1), 1000);
+    line_vth.linespaceX();
+    line_vth.visible = false;
+    wglp.add_line(line_vth);
 }
