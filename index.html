@@ -5,17 +5,13 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>SPAD Simulation</title>
-        
-        
 
         <script async src="https://kit.fontawesome.com/72b06963cb.js"></script>
 
-    
-        
-  </head>
+    </head>
   
-  <body>
-        <div style="width: 80%">
+    <body>
+        <div style="width: 90%">
             <h1>SPAD Simulation</h1>
             <h2>by Danial Chitnis</h2>
             
@@ -41,13 +37,21 @@
                 <div style="text-align: left"><span>Edinburgh Oscilloscope<span></div>
                 <div>13</div>
                 <div>21</div>
-                <div class="display"><canvas id="display"></canvas></div>
+                
+                <canvas id="display"></canvas>
+                <style>
+                    #display {
+                        height: 50vh;
+                        width: 100%;
+                    }
+                </style>
+
                 <div>
                     <span>23</span>
                     <p></p>
                     <div class="play">
-                        <button class="bt" id="bt-run" onclick="ctrl_run()">RUN</button>
-                        <button class="bt" id="bt-single" onclick="ctrl_single()">SINGLE</button>
+                        <button class="bt" id="bt-run">RUN</button>
+                        <button class="bt" id="bt-single">SINGLE</button>
         
                         <style>
                             .play {
@@ -62,8 +66,8 @@
                     <p></p>
                     <p></p>
                     <div class="play">
-                        <button class="bt" id="btCH1" onclick="btCH1()">CH1</button>
-                        <button class="bt" id="btCH2" onclick="btCH2()">CH2</button>
+                        <button class="bt" id="btCH1">CH1</button>
+                        <button class="bt" id="btCH2">CH2</button>
                     </div>
 
                 </div>
@@ -78,7 +82,7 @@
 
             <p></p>
             
-            <div style="width: 80%">
+            <div style="width: 100%">
                 <div id="slider_tr"></div>
                 <p class="range">tr = <span id="display_tr"></span></p>
     
@@ -153,16 +157,13 @@
             }
         </style>
 
-        <script src="https://cdn.jsdelivr.net/gh/nicolaspanel/numjs@0.15.1/dist/numjs.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/13.1.5/nouislider.min.css" type="text/css">
+
+        <link rel="stylesheet" href="./dist/nouislider.css" type="text/css">
         
-        <script src="gr-latest.js"></script>
-        <script src="./SPAD/spad.js"></script>
-        <script src="script-ts.js"></script>
+        <script src="./dist/index-dev.js"></script>
+   
 
-
-  </body>
+    </body>
 </html>
     
 

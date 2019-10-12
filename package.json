@@ -1,0 +1,29 @@
+{
+  "name": "spadsim",
+  "version": "0.0.1",
+  "description": "SPAD simulator",
+  "main": "index.js",
+  "dependencies": {
+    "@types/ndarray": "^1.0.7",
+    "@types/nouislider": "^9.0.5",
+    "@types/numjs": "^0.14.4",
+    "ndarray": "^1.0.18",
+    "nouislider": "^14.0.2",
+    "numjs": "^0.16.0",
+    "webgl-plot": "^0.1.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "build": "tsc ./src/script-ts.ts ./src/spad.ts && webpack"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/danchitnis/SPADsim.git"
+  },
+  "author": "Danial Chitnis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/danchitnis/SPADsim/issues"
+  },
+  "homepage": "https://github.com/danchitnis/SPADsim#readme"
+}

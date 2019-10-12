@@ -1,15 +1,20 @@
-import * as nj from "numjs";
-import * as noUiSlider from "nouislider";
-import { GR } from "grframework";
 
-import { SPAD } from "./SPAD/spad";
+import ndarray = require("ndarray");
+import { webGLplot} from "webgl-plot"
+import { color_rgba} from "webgl-plot"
+import { lineGroup } from "webgl-plot"
+import * as noUiSlider from 'nouislider';
+
+
+import { SPAD } from "./spad";
+
+
 
 
 let N = 1000;
 let phrate = 10;
 let tr = 0.02;
 let vth = 0.5;
-
 
 
 
@@ -22,25 +27,28 @@ let run_single = false;
 
 let update_new_ph = true;
 let update_ch1 = true;
-let update_ch2 = false;
+let update_ch2 = true;
 
-
-
-//plot data
 let canv = <HTMLCanvasElement>document.getElementById("display");
-canv.width = 1000;
-canv.height = 400;
 
-let gr = new GR("display");
+let devicePixelRatio = window.devicePixelRatio || 1;
+let num = Math.round(canv.clientWidth * devicePixelRatio);
 
-gr.setviewport(0, 1, 0, 1);
-gr.setwindow(1, 1000, 0, 1);
+let yscale = 1;
 
-let y=nj.arange(1000);
-
+let fps_divder = 6;
+let fps_counter = 0;
 
 
-//gr.polyline(1000, tplot, yplot);
+let wglp:webGLplot;
+
+let line_y:lineGroup;
+let line_ysq:lineGroup;
+let line_vth:lineGroup;
+
+
+init();
+
 
 let slider_tr = document.getElementById('slider_tr') as noUiSlider.Instance;
 let slider_phrate = document.getElementById("slider_phrate") as noUiSlider.Instance;;
@@ -78,6 +86,10 @@ noUiSlider.create(slider_vth, {
     }
 });
 
+document.getElementById("bt-run").addEventListener("click",ctrl_run);
+document.getElementById("bt-single").addEventListener("click",ctrl_single);
+document.getElementById("btCH1").addEventListener("click",btCH1);
+document.getElementById("btCH2").addEventListener("click",btCH2);
 
 
 update_ui();
@@ -85,13 +97,34 @@ update_ui();
 let spad = new SPAD(1000);
 let tplot = spad.t.tolist();
 
-setInterval(function() {
-
-  update(update_new_ph, update_ch1, update_ch2);
-
-}, 100);
+function new_frame() {
   
 
+  if (fps_counter==0) {
+    
+    update(update_new_ph, update_ch1, update_ch2);
+    wglp.linegroups.forEach(line => {
+      //
+
+    });
+    
+    wglp.clear();
+    wglp.update();
+
+    wglp.scaleY = yscale;
+
+  }
+
+  fps_counter++;
+
+  if (fps_counter >= fps_divder) {
+    fps_counter = 0;
+  }
+  
+  window.requestAnimationFrame(new_frame);
+}
+
+window.requestAnimationFrame(new_frame);
   
 
 
@@ -157,15 +190,15 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.generate_photon(phrate);
   }
 
-  gr.clearws();
   
   if (ch1) {
     spad.update_y(tr);
   }
 
   if (flag_CH1) {
-    gr.setlinecolorind(430);
-    gr.polyline(1000, tplot, spad.y.tolist());
+    for (let i=0;i<1000;i++) {
+      line_y.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
+    }
   }
 
 
@@ -173,12 +206,18 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
     spad.update_ysq(vth);
   }
   if (flag_CH2) {
-    gr.setlinecolorind(530);
-    gr.polyline(1000, tplot, spad.ysq.tolist());
+    for (let i=0;i<1000;i++) {
+      line_ysq.xy.set(i,1,1.9*spad.ysq.get(i,0)-0.9);
+    }
+
     if (flag_vth) {
-      let y = (nj.ones(1000)).multiply(vth);
-      gr.setlinecolorind(550);
-      gr.polyline(1000, tplot, y.tolist());
+      line_vth.visible = true;
+      for (let i=0;i<1000;i++) {
+        line_vth.constY(1.9*vth-0.9);
+      }
+    }
+    else {
+      line_vth.visible = false;
     }
   }
 
@@ -210,6 +249,7 @@ function update_ui():void {
 }
 
 
+
 //button function
 function ctrl_run():void {
   run_single = false;
@@ -221,11 +261,15 @@ function ctrl_run():void {
 }
 
 function ctrl_single():void {
+  console.log("hello!");
+  
   run_single = true;
   update_new_ph = false;
   update_ch1 = false;
   update_ch2 = false;
   update(true, true, true);
+
+  
 
 
   (<HTMLButtonElement>document.getElementById("bt-run")).style.backgroundColor = "green";
@@ -245,9 +289,11 @@ function btCH1() {
   if (flag_CH1) {
     flag_CH1 = false;
     bt.style.backgroundColor = "";
+    line_y.visible = false;
   } else {
     flag_CH1 = true;
     bt.style.backgroundColor = "Yellow";
+    line_y.visible = true;
   }
 }
 
@@ -257,9 +303,33 @@ function btCH2() {
     flag_CH2 = false;
     slider_vth.setAttribute("disabled", "true");
     bt.style.backgroundColor = "";
+    line_ysq.visible = false;
   } else {
     flag_CH2 = true;
     slider_vth.removeAttribute("disabled");
     bt.style.backgroundColor = "lightgreen";
+    line_ysq.visible = true;
   }
+}
+
+function init() {
+  wglp = new webGLplot(canv);
+
+  wglp.clear();
+
+  let color = new color_rgba(0,1,1,1);
+  line_y = new lineGroup(color, 1000);
+  line_y.linespaceX();
+  line_y.visible = true;
+  wglp.add_line(line_y);
+
+  line_ysq = new lineGroup(new color_rgba(0,1,0,1), 1000);
+  line_ysq.linespaceX();
+  line_ysq.visible = false;
+  wglp.add_line(line_ysq);
+
+  line_vth = new lineGroup(new color_rgba(1,1,0,1), 1000);
+  line_vth.linespaceX();
+  line_vth.visible = false;
+  wglp.add_line(line_vth);
 }
