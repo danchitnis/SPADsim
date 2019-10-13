@@ -1,8 +1,7 @@
 
-import ndarray = require("ndarray");
-import { webGLplot} from "webgl-plot"
-import { color_rgba} from "webgl-plot"
-import { lineGroup } from "webgl-plot"
+import { webGLplot} from 'webgl-plot'
+import { color_rgba} from 'webgl-plot'
+import { lineGroup } from 'webgl-plot'
 import * as noUiSlider from 'nouislider';
 
 
@@ -95,7 +94,7 @@ document.getElementById("btCH2").addEventListener("click",btCH2);
 update_ui();
 
 let spad = new SPAD(1000);
-let tplot = spad.t.tolist();
+
 
 function new_frame() {
   
@@ -197,7 +196,7 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
 
   if (flag_CH1) {
     for (let i=0;i<1000;i++) {
-      line_y.xy.set(i,1,1.9*spad.y.get(i,0)-0.9);
+      line_y.setY(i, 1.9*spad.y.get(i,0)-0.9);
     }
   }
 
@@ -207,7 +206,7 @@ function update(new_photon:boolean, ch1:boolean, ch2:boolean): void {
   }
   if (flag_CH2) {
     for (let i=0;i<1000;i++) {
-      line_ysq.xy.set(i,1,1.9*spad.ysq.get(i,0)-0.9);
+      line_ysq.setY(i, 1.9*spad.ysq.get(i,0)-0.9);
     }
 
     if (flag_vth) {

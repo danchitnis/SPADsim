@@ -67,7 +67,6 @@ document.getElementById("btCH1").addEventListener("click", btCH1);
 document.getElementById("btCH2").addEventListener("click", btCH2);
 update_ui();
 var spad = new spad_1.SPAD(1000);
-var tplot = spad.t.tolist();
 function new_frame() {
     if (fps_counter == 0) {
         update(update_new_ph, update_ch1, update_ch2);
@@ -135,7 +134,7 @@ function update(new_photon, ch1, ch2) {
     }
     if (flag_CH1) {
         for (var i = 0; i < 1000; i++) {
-            line_y.xy.set(i, 1, 1.9 * spad.y.get(i, 0) - 0.9);
+            line_y.setY(i, 1.9 * spad.y.get(i, 0) - 0.9);
         }
     }
     if (ch2) {
@@ -143,7 +142,7 @@ function update(new_photon, ch1, ch2) {
     }
     if (flag_CH2) {
         for (var i = 0; i < 1000; i++) {
-            line_ysq.xy.set(i, 1, 1.9 * spad.ysq.get(i, 0) - 0.9);
+            line_ysq.setY(i, 1.9 * spad.ysq.get(i, 0) - 0.9);
         }
         if (flag_vth) {
             line_vth.visible = true;
