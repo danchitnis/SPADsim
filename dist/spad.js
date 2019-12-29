@@ -1,25 +1,16 @@
 //SPAD object
 //by Danial Chitnis
 //29/07/2019
-
-import {ArrayMaths} from "./arrayMaths";
+import { ArrayMaths } from "./arrayMaths";
 /**
  * SPAD CLass function
  */
 export class SPAD {
-    N: number; 
-    tr: number;
-    t:  ArrayMaths;
-    timestamps: ArrayMaths;
-    y: ArrayMaths;
-    ysq: ArrayMaths;
-    bw: number;
-
     /**
-     * 
+     *
      * @param N the number of datapoints in time
      */
-    constructor(N: number) {
+    constructor(N) {
         this.N = N;
         this.t = new ArrayMaths(N);
         this.tr = 0;
@@ -27,90 +18,85 @@ export class SPAD {
         this.y = new ArrayMaths(N);
         this.ysq = new ArrayMaths(N);
         this.bw = 0;
-
         this.t.arange();
         this.timestamps.arange();
         this.y.fill(0);
         this.ysq.fill(0);
-
     }
     /**
      * SPAD photon gneration based random numbers
      * @param phrate photon rate normlised to 1
      */
-    generatePhoton(phrate: number): void {
+    generatePhoton(phrate) {
         const u = new ArrayMaths(phrate * 3);
-        u.random(); 
+        u.random();
         u.log();
-        u.multiply(-1/phrate);
+        u.multiply(-1 / phrate);
         //let tgap=-(1/phrate)*log(u)*T;
         //let tgap = (nj.log(u)).multiply(-1 / phrate);
         u.cumsum();
         this.timestamps = u;
     }
-    
     /**
-     * generate the y values based on the recovery time. 
+     * generate the y values based on the recovery time.
      * run generate photon first
      * @param tr the recovery time
      */
-    updateY(tr: number): void {
+    updateY(tr) {
         this.tr = tr;
         const ystep = this.tr;
         let index = 0;
         const y = new ArrayMaths(this.N);
         y.fill(0);
         const tstep = 1 / this.N;
-
         for (let i = 2; i < this.N; i++) {
             if (i * tstep > this.timestamps.array[index]) {
                 //let u = nj.random(1).get(0);
                 const u = Math.random();
-                if (u > y.array[i-1]) {
+                if (u > y.array[i - 1]) {
                     y.array[i] = 1;
-                } else {
+                }
+                else {
                     applyYstep(y, i, ystep);
                 }
                 index = index + 1;
-            } else {
+            }
+            else {
                 applyYstep(y, i, ystep);
             }
         }
         this.y = y;
     }
-
     /**
      * Do the square inverter thresholding
      * @param vthr the voltage threshold value from 0 to 1 range
      */
-    updateYsq(vthr: number): void {
+    updateYsq(vthr) {
         const ysq = new ArrayMaths(this.N);
         ysq.fill(0);
         for (let i = 0; i < this.N; i++) {
             if (this.y.array[i] < vthr) {
                 ysq.array[i] = 0;
-            } else {
+            }
+            else {
                 ysq.array[i] = 1;
             }
         }
-        if (this.bw>0) {
+        if (this.bw > 0) {
             applyBW(ysq, this.bw);
         }
         this.ysq = ysq;
     }
-    
 }
-
-
-function applyYstep(y: ArrayMaths, i: number, ystep: number): void{
+function applyYstep(y, i, ystep) {
     if (y.array[i - 1] > 0) {
         const a = y.array[i - 1] - ystep;
         y.array[i] = a;
-    } else {
+    }
+    else {
         y.array[i] = 0;
     }
 }
-
 /*function cumsum(array: number[]): number[] {
     let size = array.shape[0];
 
@@ -124,8 +110,7 @@ function applyYstep(y: ArrayMaths, i: number, ystep: number): void{
     }
     return sum;
 }*/
-
-
-function applyBW(y: ArrayMaths, bw: number): void {
+function applyBW(y, bw) {
     //
 }
+//# sourceMappingURL=spad.js.map
