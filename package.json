@@ -4,18 +4,23 @@
   "description": "SPAD simulator",
   "main": "index.js",
   "dependencies": {
-    "@types/ndarray": "^1.0.7",
-    "@types/nouislider": "^9.0.5",
-    "@types/numjs": "^0.14.4",
-    "ndarray": "^1.0.18",
-    "nouislider": "^14.0.2",
-    "numjs": "^0.16.0",
-    "static-eval": "^2.0.2",
-    "webgl-plot": "^0.1.3"
+    "@types/nouislider": "^9.0.6",
+    "nouislider": "^14.1.1",
+    "webgl-plot": "^0.2.3"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^11.0.0",
+    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^2.13.0",
+    "@typescript-eslint/parser": "^2.13.0",
+    "eslint": "^6.8.0",
+    "rollup": "^1.27.14",
+    "typescript": "^3.7.4",
+    "webpack": "^4.41.5",
+    "webpack-cli": "^3.3.10"
+  },
   "scripts": {
-    "build": "tsc ./src/script-ts.ts ./src/spad.ts && webpack"
+    "build": "tsc && webpack"
   },
   "repository": {
     "type": "git",
