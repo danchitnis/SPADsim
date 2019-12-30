@@ -65,7 +65,7 @@ init();
 
 updateUI();
 
-let spad = new SPAD(N);
+const spad = new SPAD(N);
 
 
 function newFrame(): void {
