@@ -36,7 +36,7 @@ import { SPAD } from "./spad";
     initUI();
     init();
     updateUI();
-    let spad = new SPAD(N);
+    const spad = new SPAD(N);
     function newFrame() {
         if (fpsCounter == 0) {
             update(updateNewPh, updateCH1, updateCH2);

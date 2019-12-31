@@ -4,17 +4,14 @@
   "description": "SPAD simulator",
   "main": "index.js",
   "dependencies": {
-    "@types/nouislider": "^9.0.6",
     "nouislider": "^14.1.1",
     "webgl-plot": "^0.2.3"
   },
   "devDependencies": {
-    "@rollup/plugin-commonjs": "^11.0.0",
-    "@rollup/plugin-node-resolve": "^6.0.0",
+    "@types/nouislider": "^9.0.6",
     "@typescript-eslint/eslint-plugin": "^2.13.0",
     "@typescript-eslint/parser": "^2.13.0",
     "eslint": "^6.8.0",
-    "rollup": "^1.27.14",
     "typescript": "^3.7.4",
     "webpack": "^4.41.5",
     "webpack-cli": "^3.3.10"
