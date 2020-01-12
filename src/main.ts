@@ -44,9 +44,9 @@ let canv: HTMLCanvasElement;
 //const devicePixelRatio = window.devicePixelRatio || 1;
 //const num = Math.round(canv.clientWidth * devicePixelRatio);
 
-let scaleY = 1;
+const scaleY = 0.9;
 
-let fpsDivder = 6;
+const fpsDivder = 6;
 let fpsCounter = 0;
 
 
@@ -82,7 +82,7 @@ function newFrame(): void {
     wglp.clear();
     wglp.update();
 
-    wglp.scaleY = scaleY;
+    wglp.gScaleY = scaleY;
 
   }
 

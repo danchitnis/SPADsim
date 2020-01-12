@@ -26,8 +26,8 @@ import { SPAD } from "./spad";
     let canv;
     //const devicePixelRatio = window.devicePixelRatio || 1;
     //const num = Math.round(canv.clientWidth * devicePixelRatio);
-    let scaleY = 1;
-    let fpsDivder = 6;
+    const scaleY = 0.9;
+    const fpsDivder = 6;
     let fpsCounter = 0;
     let wglp;
     let lineY;
@@ -45,7 +45,7 @@ import { SPAD } from "./spad";
             });
             wglp.clear();
             wglp.update();
-            wglp.scaleY = scaleY;
+            wglp.gScaleY = scaleY;
         }
         fpsCounter++;
         if (fpsCounter >= fpsDivder) {
