@@ -2,7 +2,8 @@ import { ColorRGBA, WebglLine, WebGLplot } from "webgl-plot";
 import * as noUiSlider from "nouislider";
 import { SPAD } from "./spad";
 {
-    const N = 1000;
+    //const N = 1000;
+    let N;
     let phrate = 10;
     let tr = 0.02;
     let vth = 0.5;
@@ -24,8 +25,6 @@ import { SPAD } from "./spad";
     let btCH1;
     let btCH2;
     let canv;
-    //const devicePixelRatio = window.devicePixelRatio || 1;
-    //const num = Math.round(canv.clientWidth * devicePixelRatio);
     const scaleY = 0.9;
     const fpsDivder = 6;
     let fpsCounter = 0;
@@ -197,7 +196,25 @@ import { SPAD } from "./spad";
             lineYsq.visible = true;
         }
     }
+    function viewJoin() {
+        lineY.offsetY = 0;
+        lineY.scaleY = 1;
+        lineYsq.offsetY = 0;
+        lineYsq.scaleY = 1;
+        lineVth.offsetY = 0;
+        lineVth.scaleY = 1;
+    }
+    function viewSplit() {
+        lineY.offsetY = 0.5;
+        lineY.scaleY = 0.5;
+        lineYsq.offsetY = -0.5;
+        lineYsq.scaleY = 0.5;
+        lineVth.offsetY = 0.5;
+        lineVth.scaleY = 0.5;
+    }
     function init() {
+        const devicePixelRatio = window.devicePixelRatio || 1;
+        N = Math.round(canv.clientWidth * devicePixelRatio);
         wglp = new WebGLplot(canv, new ColorRGBA(0.1, 0.1, 0.1, 1));
         wglp.clear();
         const color = new ColorRGBA(0, 1, 1, 1);
@@ -237,7 +254,7 @@ import { SPAD } from "./spad";
             //tooltips: [false, wNumb({decimals: 1}), true],
             range: {
                 min: 0.1,
-                max: 100
+                max: 200
             }
         });
         //slider_vth.style.visibility = "hidden";
@@ -259,6 +276,10 @@ import { SPAD } from "./spad";
         btSingle.addEventListener("click", ctrlSingle);
         btCH1.addEventListener("click", btCH1Click);
         btCH2.addEventListener("click", btCH2Click);
+        let btViewJoin = document.getElementById("btViewJoin");
+        let btViewSplit = document.getElementById("btViewSplit");
+        btViewJoin.addEventListener("click", viewJoin);
+        btViewSplit.addEventListener("click", viewSplit);
     }
 }
 //# sourceMappingURL=main.js.map

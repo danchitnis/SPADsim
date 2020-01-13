@@ -6,7 +6,8 @@ import { SPAD } from "./spad";
 
 {
 
-const N = 1000;
+//const N = 1000;
+let N: number;
 let phrate = 10;
 let tr = 0.02;
 let vth = 0.5;
@@ -40,9 +41,6 @@ let btCH2: HTMLButtonElement;
 
 let canv: HTMLCanvasElement;
 
-
-//const devicePixelRatio = window.devicePixelRatio || 1;
-//const num = Math.round(canv.clientWidth * devicePixelRatio);
 
 const scaleY = 0.9;
 
@@ -283,7 +281,39 @@ function btCH2Click(): void {
   }
 }
 
+function viewJoin(): void {
+  lineY.offsetY = 0;
+  lineY.scaleY = 1;
+
+  lineYsq.offsetY = 0;
+  lineYsq.scaleY = 1;
+
+  lineVth.offsetY = 0;
+  lineVth.scaleY = 1;
+}
+
+function viewSplit(): void {
+  lineY.offsetY = 0.5;
+  lineY.scaleY = 0.5;
+
+  lineYsq.offsetY = -0.5;
+  lineYsq.scaleY = 0.5;
+
+  lineVth.offsetY = 0.5;
+  lineVth.scaleY = 0.5;
+}
+
+
+
+
+
+
 function init(): void {
+  
+  const devicePixelRatio = window.devicePixelRatio || 1;
+  N = Math.round(canv.clientWidth * devicePixelRatio);
+
+  
   wglp = new WebGLplot(canv, new ColorRGBA(0.1, 0.1, 0.1, 1));
 
   wglp.clear();
@@ -334,7 +364,7 @@ function initUI(): void {
       //tooltips: [false, wNumb({decimals: 1}), true],
       range: {
         min: 0.1,
-        max: 100
+        max: 200
       }
   });
     
@@ -359,6 +389,12 @@ function initUI(): void {
   btSingle.addEventListener("click",ctrlSingle);
   btCH1.addEventListener("click",btCH1Click);
   btCH2.addEventListener("click",btCH2Click);
+
+  let btViewJoin = document.getElementById("btViewJoin") as HTMLButtonElement;
+  let btViewSplit = document.getElementById("btViewSplit") as HTMLButtonElement;
+
+  btViewJoin.addEventListener("click", viewJoin);
+  btViewSplit.addEventListener("click", viewSplit);
 }
 
 
