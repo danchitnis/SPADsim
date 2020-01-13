@@ -12,11 +12,13 @@ export class SPAD {
      */
     constructor(N) {
         this.N = N;
-        this.t = new ArrayMaths(N);
+        this.Ndelay = 0;
+        this.Ntotal = N + this.Ndelay;
+        this.t = new ArrayMaths(this.Ntotal);
         this.tr = 0;
-        this.timestamps = new ArrayMaths(N);
-        this.y = new ArrayMaths(N);
-        this.ysq = new ArrayMaths(N);
+        this.timestamps = new ArrayMaths(this.Ntotal);
+        this.y = new ArrayMaths(this.Ntotal);
+        this.ysq = new ArrayMaths(this.Ntotal);
         this.bw = 0;
         this.t.arange();
         this.timestamps.arange();
@@ -46,10 +48,10 @@ export class SPAD {
         this.tr = tr;
         const ystep = this.tr;
         let index = 0;
-        const y = new ArrayMaths(this.N);
+        const y = new ArrayMaths(this.Ntotal);
         y.fill(0);
-        const tstep = 1 / this.N;
-        for (let i = 2; i < this.N; i++) {
+        const tstep = 1 / this.Ntotal;
+        for (let i = 2; i < this.Ntotal; i++) {
             if (i * tstep > this.timestamps.array[index]) {
                 //let u = nj.random(1).get(0);
                 const u = Math.random();
@@ -57,12 +59,12 @@ export class SPAD {
                     y.array[i] = 1;
                 }
                 else {
-                    applyYstep(y, i, ystep);
+                    this.applyYstep(y, i, ystep);
                 }
                 index = index + 1;
             }
             else {
-                applyYstep(y, i, ystep);
+                this.applyYstep(y, i, ystep);
             }
         }
         this.y = y;
@@ -72,9 +74,9 @@ export class SPAD {
      * @param vthr the voltage threshold value from 0 to 1 range
      */
     updateYsq(vthr) {
-        const ysq = new ArrayMaths(this.N);
+        const ysq = new ArrayMaths(this.Ntotal);
         ysq.fill(0);
-        for (let i = 0; i < this.N; i++) {
+        for (let i = 0; i < this.Ntotal; i++) {
             if (this.y.array[i] < vthr) {
                 ysq.array[i] = 0;
             }
@@ -83,18 +85,23 @@ export class SPAD {
             }
         }
         if (this.bw > 0) {
-            applyBW(ysq, this.bw);
+            this.applyBW(ysq, this.bw);
         }
         this.ysq = ysq;
     }
-}
-function applyYstep(y, i, ystep) {
-    if (y.array[i - 1] > 0) {
-        const a = y.array[i - 1] - ystep;
-        y.array[i] = a;
+    applyYstep(y, i, ystep) {
+        if (y.array[i - 1] > 0) {
+            const a = y.array[i - 1] - ystep;
+            y.array[i] = a;
+        }
+        else {
+            y.array[i] = 0;
+        }
     }
-    else {
-        y.array[i] = 0;
+    truncate(array, n) {
+    }
+    applyBW(y, bw) {
+        //
     }
 }
 /*function cumsum(array: number[]): number[] {
@@ -110,7 +117,4 @@ function applyYstep(y, i, ystep) {
     }
     return sum;
 }*/
-function applyBW(y, bw) {
-    //
-}
 //# sourceMappingURL=spad.js.map
