@@ -1,4 +1,4 @@
-# SPAD Sim
+# SPADsim
 
 An online simulator for [Single Avalanche Photo Diode (SPAD)](https://en.wikipedia.org/wiki/Single-photon_avalanche_diode)
 
@@ -6,7 +6,7 @@ See the online demo [here 🚀](https://danchitnis.github.io/SPADsim/index.html)
 
 ## What are these pulses on the screen
 
-The pulses replicate the pulses when connect a SPAD circuit to an oscilloscope. There are various type of SPADs and biasing schemes, this is representing a single SPAD with passive quenching
+The pulses replicate the pulses when connect a SPAD circuit to an oscilloscope. There are various type of SPADs and biasing schemes, this is representing a single SPAD with passive quenching. CH1 is for the SPAD node, and CH2 is after the digital buffer.
 
 ## What is a SPAD?
 
@@ -45,4 +45,4 @@ you can create Github issue to report a bug or mention a feature request
 
 ## License
 
-Please see the license notice.
+Please see the [license](https://github.com/danchitnis/SPADsim/blob/master/LICENSE) notice.
