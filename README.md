@@ -1,6 +1,6 @@
 # SPADsim
 
-An online simulator for [Single Avalanche Photo Diode (SPAD)](https://en.wikipedia.org/wiki/Single-photon_avalanche_diode)
+An online simulation tool for [Single Avalanche Photo Diode (SPAD)](https://en.wikipedia.org/wiki/Single-photon_avalanche_diode)
 
 See the online demo [here 🚀](https://danchitnis.github.io/SPADsim/index.html)
 
