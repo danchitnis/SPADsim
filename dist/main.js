@@ -68,10 +68,18 @@ import { SPAD } from "./spad";
         vth = parseFloat(values[handle]);
         displayVth.innerHTML = vth.toString();
     });
-    sliderTr.noUiSlider.on("start", function (values, handle) { sliderStart(); });
-    sliderTr.noUiSlider.on("end", function (values, handle) { sliderEnd(); });
-    sliderPhrate.noUiSlider.on("start", function (values, handle) { sliderStart(); });
-    sliderPhrate.noUiSlider.on("end", function (values, handle) { sliderEnd(); });
+    sliderTr.noUiSlider.on("start", function (values, handle) {
+        sliderStart();
+    });
+    sliderTr.noUiSlider.on("end", function (values, handle) {
+        sliderEnd();
+    });
+    sliderPhrate.noUiSlider.on("start", function (values, handle) {
+        sliderStart();
+    });
+    sliderPhrate.noUiSlider.on("end", function (values, handle) {
+        sliderEnd();
+    });
     sliderVth.noUiSlider.on("start", function (values, handle) {
         flagVth = true;
         if (runSingle) {
@@ -215,7 +223,7 @@ import { SPAD } from "./spad";
     function init() {
         const devicePixelRatio = window.devicePixelRatio || 1;
         N = Math.round(canv.clientWidth * devicePixelRatio);
-        wglp = new WebGLplot(canv, new ColorRGBA(0.1, 0.1, 0.1, 1));
+        wglp = new WebGLplot(canv);
         wglp.clear();
         const color = new ColorRGBA(0, 1, 1, 1);
         lineY = new WebglLine(color, N);
@@ -233,7 +241,7 @@ import { SPAD } from "./spad";
     }
     function initUI() {
         canv = document.getElementById("display");
-        sliderTr = document.getElementById('slider_tr');
+        sliderTr = document.getElementById("slider_tr");
         sliderPhrate = document.getElementById("slider_phrate");
         sliderVth = document.getElementById("slider_vth");
         displayTr = document.getElementById("displayTr");
