@@ -1,5 +1,5 @@
 import { ColorRGBA, WebglLine, WebGLplot } from "webgl-plot";
-import * as noUiSlider from "nouislider";
+import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";
 
 {
@@ -20,9 +20,9 @@ import { SPAD } from "./spad";
   let updateCH1 = true;
   let updateCH2 = true;
 
-  let sliderTr: noUiSlider.Instance;
-  let sliderPhrate: noUiSlider.Instance;
-  let sliderVth: noUiSlider.Instance;
+  let sliderTr: SimpleSlider;
+  let sliderPhrate: SimpleSlider;
+  let sliderVth: SimpleSlider;
 
   let displayTr: HTMLSpanElement;
   let displayPhrate: HTMLSpanElement;
@@ -77,38 +77,29 @@ import { SPAD } from "./spad";
 
   window.requestAnimationFrame(newFrame);
 
-  sliderTr.noUiSlider.on("update", function(values, handle) {
-    tr = parseFloat(values[handle]) / 10;
-    displayTr.innerHTML = tr.toString();
-    //run_single = true;
+  sliderTr.addEventListener("update", () => {
+    tr = sliderTr.value / 10;
+    displayTr.innerHTML = tr.toPrecision(2);
   });
 
-  sliderPhrate.noUiSlider.on("update", function(values, handle) {
-    phrate = parseFloat(values[handle]);
-    displayPhrate.innerHTML = phrate.toString();
+  sliderPhrate.addEventListener("update", () => {
+    phrate = sliderPhrate.value;
+    displayPhrate.innerHTML = phrate.toPrecision(2);
     spad.generatePhoton(phrate);
-    //run_single = true;
   });
 
-  sliderVth.noUiSlider.on("update", function(values, handle) {
-    vth = parseFloat(values[handle]);
-    displayVth.innerHTML = vth.toString();
+  sliderVth.addEventListener("update", () => {
+    vth = sliderVth.value;
+    displayVth.innerHTML = vth.toPrecision(2);
   });
 
-  sliderTr.noUiSlider.on("start", function(values, handle) {
-    sliderStart();
-  });
-  sliderTr.noUiSlider.on("end", function(values, handle) {
-    sliderEnd();
-  });
-  sliderPhrate.noUiSlider.on("start", function(values, handle) {
-    sliderStart();
-  });
-  sliderPhrate.noUiSlider.on("end", function(values, handle) {
-    sliderEnd();
-  });
+  sliderTr.addEventListener("drag-start", sliderStart);
+  sliderTr.addEventListener("drag-end", sliderEnd);
 
-  sliderVth.noUiSlider.on("start", function(values, handle) {
+  sliderPhrate.addEventListener("drag-start", sliderStart);
+  sliderPhrate.addEventListener("drag-end", sliderEnd);
+
+  sliderVth.addEventListener("drag-start", () => {
     flagVth = true;
     if (runSingle) {
       updateCH1 = false;
@@ -116,7 +107,7 @@ import { SPAD } from "./spad";
     }
   });
 
-  sliderVth.noUiSlider.on("end", function(values, handle) {
+  sliderVth.addEventListener("drag-end", () => {
     flagVth = false;
     sliderEnd();
   });
@@ -235,12 +226,12 @@ import { SPAD } from "./spad";
     const bt = document.getElementById("btCH2") as HTMLButtonElement;
     if (flagCH2) {
       flagCH2 = false;
-      sliderVth.setAttribute("disabled", "true");
+      //sliderVth.setAttribute("disabled", "true");   //???????????????????
       bt.style.backgroundColor = "";
       lineYsq.visible = false;
     } else {
       flagCH2 = true;
-      sliderVth.removeAttribute("disabled");
+      //sliderVth.removeAttribute("disabled");   //????????????
       bt.style.backgroundColor = "lightgreen";
       lineYsq.visible = true;
     }
@@ -296,17 +287,19 @@ import { SPAD } from "./spad";
   function initUI(): void {
     canv = document.getElementById("display") as HTMLCanvasElement;
 
-    sliderTr = document.getElementById("slider_tr") as noUiSlider.Instance;
-    sliderPhrate = document.getElementById(
-      "slider_phrate"
-    ) as noUiSlider.Instance;
-    sliderVth = document.getElementById("slider_vth") as noUiSlider.Instance;
+    sliderTr = new SimpleSlider("slider_tr", 0.01, 1, 0);
+    sliderPhrate = new SimpleSlider("slider_phrate", 0.1, 200, 0);
+    sliderVth = new SimpleSlider("slider_vth", 0.01, 1, 0);
 
     displayTr = document.getElementById("displayTr") as HTMLSpanElement;
     displayPhrate = document.getElementById("displayPhrate") as HTMLSpanElement;
     displayVth = document.getElementById("displayVth") as HTMLSpanElement;
 
-    noUiSlider.create(sliderTr, {
+    sliderTr.setValue(0.5);
+    sliderPhrate.setValue(10);
+    sliderVth.setValue(0.5);
+
+    /*noUiSlider.create(sliderTr, {
       start: [0.5],
       connect: [true, false],
       //tooltips: [false, wNumb({decimals: 1}), true],
@@ -336,7 +329,7 @@ import { SPAD } from "./spad";
         min: 0.01,
         max: 1
       }
-    });
+    });*/
 
     btRun = document.getElementById("bt-run") as HTMLButtonElement;
     btSingle = document.getElementById("bt-single") as HTMLButtonElement;
@@ -348,10 +341,8 @@ import { SPAD } from "./spad";
     btCH1.addEventListener("click", btCH1Click);
     btCH2.addEventListener("click", btCH2Click);
 
-    let btViewJoin = document.getElementById("btViewJoin") as HTMLButtonElement;
-    let btViewSplit = document.getElementById(
-      "btViewSplit"
-    ) as HTMLButtonElement;
+    const btViewJoin = document.getElementById("btViewJoin") as HTMLButtonElement;
+    const btViewSplit = document.getElementById("btViewSplit") as HTMLButtonElement;
 
     btViewJoin.addEventListener("click", viewJoin);
     btViewSplit.addEventListener("click", viewSplit);
