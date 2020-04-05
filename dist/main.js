@@ -1,5 +1,5 @@
 import { ColorRGBA, WebglLine, WebGLplot } from "webgl-plot";
-import * as noUiSlider from "nouislider";
+import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";
 {
     //const N = 1000;
@@ -39,7 +39,7 @@ import { SPAD } from "./spad";
     function newFrame() {
         if (fpsCounter == 0) {
             update(updateNewPh, updateCH1, updateCH2);
-            wglp.lines.forEach(line => {
+            wglp.lines.forEach((line) => {
                 //
             });
             wglp.clear();
@@ -53,41 +53,31 @@ import { SPAD } from "./spad";
         window.requestAnimationFrame(newFrame);
     }
     window.requestAnimationFrame(newFrame);
-    sliderTr.noUiSlider.on("update", function (values, handle) {
-        tr = parseFloat(values[handle]) / 10;
-        displayTr.innerHTML = tr.toString();
-        //run_single = true;
+    sliderTr.addEventListener("update", () => {
+        tr = sliderTr.value / 10;
+        displayTr.innerHTML = tr.toPrecision(2);
     });
-    sliderPhrate.noUiSlider.on("update", function (values, handle) {
-        phrate = parseFloat(values[handle]);
-        displayPhrate.innerHTML = phrate.toString();
+    sliderPhrate.addEventListener("update", () => {
+        phrate = sliderPhrate.value;
+        displayPhrate.innerHTML = phrate.toPrecision(2);
         spad.generatePhoton(phrate);
-        //run_single = true;
     });
-    sliderVth.noUiSlider.on("update", function (values, handle) {
-        vth = parseFloat(values[handle]);
-        displayVth.innerHTML = vth.toString();
+    sliderVth.addEventListener("update", () => {
+        vth = sliderVth.value;
+        displayVth.innerHTML = vth.toPrecision(2);
     });
-    sliderTr.noUiSlider.on("start", function (values, handle) {
-        sliderStart();
-    });
-    sliderTr.noUiSlider.on("end", function (values, handle) {
-        sliderEnd();
-    });
-    sliderPhrate.noUiSlider.on("start", function (values, handle) {
-        sliderStart();
-    });
-    sliderPhrate.noUiSlider.on("end", function (values, handle) {
-        sliderEnd();
-    });
-    sliderVth.noUiSlider.on("start", function (values, handle) {
+    sliderTr.addEventListener("drag-start", sliderStart);
+    sliderTr.addEventListener("drag-end", sliderEnd);
+    sliderPhrate.addEventListener("drag-start", sliderStart);
+    sliderPhrate.addEventListener("drag-end", sliderEnd);
+    sliderVth.addEventListener("drag-start", () => {
         flagVth = true;
         if (runSingle) {
             updateCH1 = false;
             updateCH2 = true;
         }
     });
-    sliderVth.noUiSlider.on("end", function (values, handle) {
+    sliderVth.addEventListener("drag-end", () => {
         flagVth = false;
         sliderEnd();
     });
@@ -193,13 +183,13 @@ import { SPAD } from "./spad";
         const bt = document.getElementById("btCH2");
         if (flagCH2) {
             flagCH2 = false;
-            sliderVth.setAttribute("disabled", "true");
+            sliderVth.setEnable(false);
             bt.style.backgroundColor = "";
             lineYsq.visible = false;
         }
         else {
             flagCH2 = true;
-            sliderVth.removeAttribute("disabled");
+            sliderVth.setEnable(true);
             bt.style.backgroundColor = "lightgreen";
             lineYsq.visible = true;
         }
@@ -241,41 +231,47 @@ import { SPAD } from "./spad";
     }
     function initUI() {
         canv = document.getElementById("display");
-        sliderTr = document.getElementById("slider_tr");
-        sliderPhrate = document.getElementById("slider_phrate");
-        sliderVth = document.getElementById("slider_vth");
+        sliderTr = new SimpleSlider("slider_tr", 0.01, 1, 0);
+        sliderPhrate = new SimpleSlider("slider_phrate", 0.1, 200, 0);
+        sliderVth = new SimpleSlider("slider_vth", 0.01, 1, 0);
         displayTr = document.getElementById("displayTr");
         displayPhrate = document.getElementById("displayPhrate");
         displayVth = document.getElementById("displayVth");
-        noUiSlider.create(sliderTr, {
-            start: [0.5],
-            connect: [true, false],
-            //tooltips: [false, wNumb({decimals: 1}), true],
-            range: {
-                min: 0.01,
-                max: 1
-            }
+        sliderTr.setValue(0.5);
+        sliderPhrate.setValue(10);
+        sliderVth.setValue(0.5);
+        sliderVth.setEnable(false);
+        /*noUiSlider.create(sliderTr, {
+          start: [0.5],
+          connect: [true, false],
+          //tooltips: [false, wNumb({decimals: 1}), true],
+          range: {
+            min: 0.01,
+            max: 1
+          }
         });
+    
         noUiSlider.create(sliderPhrate, {
-            start: [10],
-            connect: [true, false],
-            //tooltips: [false, wNumb({decimals: 1}), true],
-            range: {
-                min: 0.1,
-                max: 200
-            }
+          start: [10],
+          connect: [true, false],
+          //tooltips: [false, wNumb({decimals: 1}), true],
+          range: {
+            min: 0.1,
+            max: 200
+          }
         });
+    
         //slider_vth.style.visibility = "hidden";
         sliderVth.setAttribute("disabled", "true");
         noUiSlider.create(sliderVth, {
-            start: [0.5],
-            connect: [true, false],
-            //tooltips: [false, wNumb({decimals: 1}), true],
-            range: {
-                min: 0.01,
-                max: 1
-            }
-        });
+          start: [0.5],
+          connect: [true, false],
+          //tooltips: [false, wNumb({decimals: 1}), true],
+          range: {
+            min: 0.01,
+            max: 1
+          }
+        });*/
         btRun = document.getElementById("bt-run");
         btSingle = document.getElementById("bt-single");
         btCH1 = document.getElementById("btCH1");
@@ -284,8 +280,8 @@ import { SPAD } from "./spad";
         btSingle.addEventListener("click", ctrlSingle);
         btCH1.addEventListener("click", btCH1Click);
         btCH2.addEventListener("click", btCH2Click);
-        let btViewJoin = document.getElementById("btViewJoin");
-        let btViewSplit = document.getElementById("btViewSplit");
+        const btViewJoin = document.getElementById("btViewJoin");
+        const btViewSplit = document.getElementById("btViewSplit");
         btViewJoin.addEventListener("click", viewJoin);
         btViewSplit.addEventListener("click", viewSplit);
     }
