@@ -56,7 +56,7 @@ import { SPAD } from "./spad";
   function newFrame(): void {
     if (fpsCounter == 0) {
       update(updateNewPh, updateCH1, updateCH2);
-      wglp.lines.forEach(line => {
+      wglp.lines.forEach((line) => {
         //
       });
 
@@ -226,12 +226,12 @@ import { SPAD } from "./spad";
     const bt = document.getElementById("btCH2") as HTMLButtonElement;
     if (flagCH2) {
       flagCH2 = false;
-      //sliderVth.setAttribute("disabled", "true");   //???????????????????
+      sliderVth.setEnable(false);
       bt.style.backgroundColor = "";
       lineYsq.visible = false;
     } else {
       flagCH2 = true;
-      //sliderVth.removeAttribute("disabled");   //????????????
+      sliderVth.setEnable(true);
       bt.style.backgroundColor = "lightgreen";
       lineYsq.visible = true;
     }
@@ -297,7 +297,9 @@ import { SPAD } from "./spad";
 
     sliderTr.setValue(0.5);
     sliderPhrate.setValue(10);
+
     sliderVth.setValue(0.5);
+    sliderVth.setEnable(false);
 
     /*noUiSlider.create(sliderTr, {
       start: [0.5],

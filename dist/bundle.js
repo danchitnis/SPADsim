@@ -233,6 +233,7 @@
             this.currentX = 0;
             this.initialX = 0;
             this.handlePos = 0;
+            this.enable = true;
             /**
              * Current value of the slider
              * @default half of the value range
@@ -259,11 +260,13 @@
             this.makeDivs(div);
             this.init();
             this.handleToCentre();
-            this.divHandle.addEventListener("mousedown", e => {
+            this.divHandle.addEventListener("mousedown", (e) => {
                 const x = e.clientX;
-                this.dragStart(x);
+                if (this.enable) {
+                    this.dragStart(x);
+                }
             });
-            this.divMain.addEventListener("mousemove", e => {
+            this.divMain.addEventListener("mousemove", (e) => {
                 const x = e.clientX;
                 this.drag(e, x);
             });
@@ -273,19 +276,23 @@
             this.divMain.addEventListener("mouseleave", () => {
                 this.dragEnd();
             });
-            this.divBarL.addEventListener("mousedown", e => {
-                const x = e.clientX;
-                this.translate2(x);
+            this.divBarL.addEventListener("mousedown", (e) => {
+                if (this.enable) {
+                    const x = e.clientX;
+                    this.translateN(x);
+                }
             });
-            this.divBarR.addEventListener("mousedown", e => {
-                const x = e.clientX;
-                this.translate2(x);
+            this.divBarR.addEventListener("mousedown", (e) => {
+                if (this.enable) {
+                    const x = e.clientX;
+                    this.translateN(x);
+                }
             });
-            this.divHandle.addEventListener("touchstart", e => {
+            this.divHandle.addEventListener("touchstart", (e) => {
                 const x = e.touches[0].clientX;
                 this.dragStart(x);
             });
-            this.divMain.addEventListener("touchmove", e => {
+            this.divMain.addEventListener("touchmove", (e) => {
                 const x = e.touches[0].clientX;
                 this.drag(e, x);
             });
@@ -302,7 +309,7 @@
             if (this.active) {
                 e.preventDefault();
                 this.currentX = x - this.initialX;
-                this.translate2(this.currentX);
+                this.translateN(this.currentX);
                 this.value = this.getPositionValue();
                 this.dispatchEvent(new CustomEvent("update"));
             }
@@ -312,7 +319,7 @@
             this.dispatchEvent(new CustomEvent("drag-end"));
         }
         /*-----------------------------------------------------------*/
-        translate2(xPos) {
+        translateN(xPos) {
             this.translate(xPos);
             if (this.valueN > 0) {
                 let val = this.getPositionValue();
@@ -333,10 +340,8 @@
                     break;
                 }
                 default: {
-                    this.divHandle.style.left =
-                        (this.handlePos - this.handleOffset).toString() + "px";
-                    this.divBarL.style.width =
-                        (this.handlePos - this.handleOffset).toString() + "px";
+                    this.divHandle.style.left = (this.handlePos - this.handleOffset).toString() + "px";
+                    this.divBarL.style.width = (this.handlePos - this.handleOffset).toString() + "px";
                 }
             }
         }
@@ -360,13 +365,11 @@
             const handleWidth = parseFloat(getComputedStyle(this.divHandle).getPropertyValue("width"));
             const handlePad = parseFloat(getComputedStyle(this.divHandle).getPropertyValue("border-left-width"));
             this.handleOffset = handleWidth / 2 + handlePad;
-            this.handlePos =
-                parseFloat(getComputedStyle(this.divHandle).left) + this.handleOffset;
+            this.handlePos = parseFloat(getComputedStyle(this.divHandle).left) + this.handleOffset;
             this.divBarL.style.left = this.handleOffset.toString() + "px";
             this.divBarR.style.left = this.handleOffset.toString() + "px";
             this.sliderWidth = divMainWidth - 2 * this.handleOffset;
-            this.divBarL.style.width =
-                (this.handlePos - this.handleOffset).toString() + "px";
+            this.divBarL.style.width = (this.handlePos - this.handleOffset).toString() + "px";
             this.divBarR.style.width = this.sliderWidth.toString() + "px";
             this.pxMin = this.handleOffset;
             this.pxMax = this.pxMin + this.sliderWidth;
@@ -394,6 +397,19 @@
         resize() {
             this.init();
             this.setValue(this.value);
+        }
+        setEnable(state) {
+            this.enable = state;
+            if (this.enable) {
+                this.divHandle.style.backgroundColor = "darkslategrey";
+                this.divBarL.style.backgroundColor = "lightskyblue";
+                this.divBarR.style.backgroundColor = "lightgray";
+            }
+            else {
+                this.divHandle.style.backgroundColor = "lightgray";
+                this.divBarL.style.backgroundColor = "gray";
+                this.divBarR.style.backgroundColor = "gray";
+            }
         }
         /**
          * Sets the status of the debug mode
@@ -634,7 +650,7 @@
         function newFrame() {
             if (fpsCounter == 0) {
                 update(updateNewPh, updateCH1, updateCH2);
-                wglp.lines.forEach(line => {
+                wglp.lines.forEach((line) => {
                     //
                 });
                 wglp.clear();
@@ -778,13 +794,13 @@
             const bt = document.getElementById("btCH2");
             if (flagCH2) {
                 flagCH2 = false;
-                //sliderVth.setAttribute("disabled", "true");   //???????????????????
+                sliderVth.setEnable(false);
                 bt.style.backgroundColor = "";
                 lineYsq.visible = false;
             }
             else {
                 flagCH2 = true;
-                //sliderVth.removeAttribute("disabled");   //????????????
+                sliderVth.setEnable(true);
                 bt.style.backgroundColor = "lightgreen";
                 lineYsq.visible = true;
             }
@@ -835,6 +851,7 @@
             sliderTr.setValue(0.5);
             sliderPhrate.setValue(10);
             sliderVth.setValue(0.5);
+            sliderVth.setEnable(false);
             /*noUiSlider.create(sliderTr, {
               start: [0.5],
               connect: [true, false],

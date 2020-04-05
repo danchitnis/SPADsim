@@ -4,7 +4,7 @@
   "description": "SPAD simulator",
   "main": "index.js",
   "dependencies": {
-    "@danchitnis/simple-slider": "^0.1.1",
+    "@danchitnis/simple-slider": "^0.1.2",
     "webgl-plot": "^0.2.9"
   },
   "devDependencies": {
