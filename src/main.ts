@@ -1,4 +1,4 @@
-import { ColorRGBA, WebglLine, WebGLplot } from "webgl-plot";
+import WebGLplot, { ColorRGBA, WebglLine } from "webgl-plot";
 import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";
 
@@ -269,17 +269,17 @@ import { SPAD } from "./spad";
 
     const color = new ColorRGBA(0, 1, 1, 1);
     lineY = new WebglLine(color, N);
-    lineY.linespaceX(-1, 2 / N);
+    lineY.lineSpaceX(-1, 2 / N);
     lineY.visible = true;
     wglp.addLine(lineY);
 
     lineYsq = new WebglLine(new ColorRGBA(0, 1, 0, 1), N);
-    lineYsq.linespaceX(-1, 2 / N);
+    lineYsq.lineSpaceX(-1, 2 / N);
     lineYsq.visible = false;
     wglp.addLine(lineYsq);
 
     lineVth = new WebglLine(new ColorRGBA(1, 1, 0, 1), N);
-    lineVth.linespaceX(-1, 2 / N);
+    lineVth.lineSpaceX(-1, 2 / N);
     lineVth.visible = false;
     wglp.addLine(lineVth);
   }
