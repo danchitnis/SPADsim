@@ -23,10 +23,10 @@
     chalk "^2.0.0"
     js-tokens "^4.0.0"
 
-"@danchitnis/simple-slider@^0.1.2":
-  version "0.1.2"
-  resolved "https://registry.yarnpkg.com/@danchitnis/simple-slider/-/simple-slider-0.1.2.tgz#6d11b22e50c2685cf294460707c304721b887b27"
-  integrity sha512-gw6AJ1KICFO+k/4Tpxe+5GOBkdqZkF9Nt33FwSH4h3NrpZX0Egl8yJ+8hEf0QqMLKba4GnmRCzavvYBpvV4TMQ==
+"@danchitnis/simple-slider@^0.1.3":
+  version "0.1.3"
+  resolved "https://registry.yarnpkg.com/@danchitnis/simple-slider/-/simple-slider-0.1.3.tgz#ae930970d39429c0304e300b55154fd88936dc2b"
+  integrity sha512-DPYcpSeXyJu4xjBwZqXJHE+yLAxgRH4UbHRbcE5hR7qUKvkITk6z1f/OoTsjk5SkRxguqmV3ZWCYXo+LPbm1nA==
 
 "@rollup/plugin-node-resolve@^7.1.3":
   version "7.1.3"
