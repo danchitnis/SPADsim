@@ -1048,10 +1048,10 @@ v8-compile-cache@^2.0.3:
   resolved "https://registry.yarnpkg.com/v8-compile-cache/-/v8-compile-cache-2.1.0.tgz#e14de37b31a6d194f5690d67efc4e7f6fc6ab30e"
   integrity sha512-usZBT3PW+LOjM25wbqIlZwPeJV+3OSz3M1k1Ws8snlW39dZyYL9lOGC5FgPVHfk0jKmjiDV8Z0mIbVQPiwFs7g==
 
-webgl-plot@^0.3.0:
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/webgl-plot/-/webgl-plot-0.3.0.tgz#dc638b80c8c63ee32ec43f62b56f16c659950a02"
-  integrity sha512-8JmRBYd9KX/9pnTvAEzImy+yL03lZGQOg/p0fmpiPti7TChcK0a7nvV4bW5BvuGk8rGP6DYwqxQBqWADdGiq2Q==
+webgl-plot@^0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/webgl-plot/-/webgl-plot-0.3.1.tgz#9296f3d594be77224bcd038cddd3ff646e197d3b"
+  integrity sha512-9Rc6HmhhO0oVl/vU1fBhx0FWI+1BYypGwGnM/GaZqp0UI4hCGWHVtxtsgflleh5DdmAQCuD+pXjyRIfVK3+6dA==
 
 which@^1.2.9:
   version "1.3.1"

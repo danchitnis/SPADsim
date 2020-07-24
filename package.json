@@ -5,7 +5,7 @@
   "main": "index.js",
   "dependencies": {
     "@danchitnis/simple-slider": "^0.1.2",
-    "webgl-plot": "^0.3.0"
+    "webgl-plot": "^0.3.1"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^7.1.3",
