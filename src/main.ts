@@ -1,3 +1,4 @@
+/* eslint-disable no-inner-declarations */
 import WebGLplot, { ColorRGBA, WebglLine } from "webgl-plot";
 import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";

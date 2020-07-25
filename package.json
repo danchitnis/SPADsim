@@ -4,19 +4,21 @@
   "description": "SPAD simulator",
   "main": "index.js",
   "dependencies": {
-    "@danchitnis/simple-slider": "^0.1.2",
-    "webgl-plot": "^0.3.0"
+    "@danchitnis/simple-slider": "^0.1.4",
+    "remove": "^0.1.5",
+    "webgl-plot": "^0.3.1"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^7.1.3",
-    "@typescript-eslint/eslint-plugin": "^2.30.0",
-    "@typescript-eslint/parser": "^2.30.0",
-    "eslint": "^6.8.0",
-    "rollup": "^2.7.3",
-    "typescript": "^3.8.3"
+    "@rollup/plugin-node-resolve": "^8.4.0",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
+    "@typescript-eslint/parser": "^3.7.0",
+    "eslint": "^7.5.0",
+    "rollup": "^2.23.0",
+    "typescript": "^3.9.7"
   },
   "scripts": {
-    "build": "tsc && rollup -c"
+    "build": "tsc && rollup -c",
+    "sdk": "yarn dlx @yarnpkg/pnpify --sdk vscode"
   },
   "repository": {
     "type": "git",

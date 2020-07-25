@@ -253,6 +253,9 @@
             this.webgl.enableVertexAttribArray(line._coord);
             this.lines.push(line);
         }
+        removeLine(index) {
+            //to be implemented
+        }
         /**
          * Change the WbGL viewport
          * @param a
@@ -459,6 +462,10 @@
             this.init();
             this.setValue(this.value);
         }
+        /**
+         * Change the state of the slider
+         * @param state enable state of the slider
+         */
         setEnable(state) {
             this.enable = state;
             if (this.enable) {
@@ -673,6 +680,7 @@
         return sum;
     }*/
 
+    /* eslint-disable no-inner-declarations */
     {
         //const N = 1000;
         let N;
