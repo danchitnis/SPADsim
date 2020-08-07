@@ -6,7 +6,7 @@
   "dependencies": {
     "@danchitnis/simple-slider": "^0.1.4",
     "remove": "^0.1.5",
-    "webgl-plot": "^0.3.1"
+    "webgl-plot": "^0.4.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^8.4.0",
