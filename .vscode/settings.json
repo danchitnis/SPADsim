@@ -1,7 +1,0 @@
-{
-  "liveServer.settings.port": 5501,
-  "typescript.tsdk": ".yarn/sdks/typescript/lib",
-  "cSpell.language": "en-GB",
-  "eslint.nodePath": ".yarn/sdks",
-  "typescript.enablePromptUseWorkspaceTsdk": true
-}

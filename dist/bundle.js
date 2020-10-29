@@ -24,7 +24,6 @@
             this.offsetY = 0;
             this.loop = false;
             this._vbuffer = 0;
-            this._prog = 0;
             this._coord = 0;
             this.visible = true;
             this.intensity = 1;
@@ -133,7 +132,7 @@
     }
 
     /**
-     * Author Danial Chitnis 2019
+     * Author Danial Chitnis 2019-20
      *
      * inspired by:
      * https://codepen.io/AzazelN28
@@ -145,36 +144,83 @@
     class WebGLPlot {
         /**
          * Create a webgl-plot instance
-         * @param canv - the HTML canvas in which the plot appears
+         * @param canvas - the canvas in which the plot appears
+         * @param debug - (Optional) log debug messages to console
          *
          * @example
+         *
+         * For HTMLCanvas
          * ```typescript
-         * const canv = dcoument.getEelementbyId("canvas");
-         * const webglp = new WebGLplot(canv);
+         * const canvas = dcoument.getEelementbyId("canvas");
+         *
+         * const devicePixelRatio = window.devicePixelRatio || 1;
+         * canvas.width = canvas.clientWidth * devicePixelRatio;
+         * canvas.height = canvas.clientHeight * devicePixelRatio;
+         *
+         * const webglp = new WebGLplot(canvas);
+         * ...
+         * ```
+         * @example
+         *
+         * For OffScreenCanvas
+         * ```typescript
+         * const offscreen = htmlCanvas.transferControlToOffscreen();
+         *
+         * offscreen.width = htmlCanvas.clientWidth * window.devicePixelRatio;
+         * offscreen.height = htmlCanvas.clientHeight * window.devicePixelRatio;
+         *
+         * const worker = new Worker("offScreenCanvas.js", { type: "module" });
+         * worker.postMessage({ canvas: offscreen }, [offscreen]);
+         * ```
+         * Then in offScreenCanvas.js
+         * ```typescript
+         * onmessage = function (evt) {
+         * const wglp = new WebGLplot(evt.data.canvas);
+         * ...
+         * }
          * ```
          */
-        constructor(canv) {
-            const devicePixelRatio = window.devicePixelRatio || 1;
-            // set the size of the drawingBuffer based on the size it's displayed.
-            canv.width = canv.clientWidth * devicePixelRatio;
-            canv.height = canv.clientHeight * devicePixelRatio;
-            const webgl = canv.getContext("webgl", {
-                antialias: true,
-                transparent: false,
-            });
-            this.lines = [];
-            this.webgl = webgl;
+        constructor(canvas, options) {
+            /**
+             * log debug output
+             */
+            this.debug = false;
+            if (options == undefined) {
+                this.webgl = canvas.getContext("webgl", {
+                    antialias: true,
+                    transparent: false,
+                });
+            }
+            else {
+                this.webgl = canvas.getContext("webgl", {
+                    antialias: options.antialias,
+                    transparent: options.transparent,
+                    desynchronized: options.deSync,
+                    powerPerformance: options.powerPerformance,
+                    preserveDrawing: options.preserveDrawing,
+                });
+                this.debug = options.debug == undefined ? false : options.debug;
+            }
+            this.log("canvas type is: " + canvas.constructor.name);
+            this.log(`[webgl-plot]:width=${canvas.width}, height=${canvas.height}`);
+            this._lines = [];
+            //this.webgl = webgl;
             this.gScaleX = 1;
             this.gScaleY = 1;
             this.gXYratio = 1;
             this.gOffsetX = 0;
             this.gOffsetY = 0;
             // Enable the depth test
-            webgl.enable(webgl.DEPTH_TEST);
+            this.webgl.enable(this.webgl.DEPTH_TEST);
             // Clear the color and depth buffer
-            webgl.clear(webgl.COLOR_BUFFER_BIT || webgl.DEPTH_BUFFER_BIT);
+            this.webgl.clear(this.webgl.COLOR_BUFFER_BIT || this.webgl.DEPTH_BUFFER_BIT);
             // Set the view port
-            webgl.viewport(0, 0, canv.width, canv.height);
+            this.webgl.viewport(0, 0, canvas.width, canvas.height);
+            this.progThinLine = this.webgl.createProgram();
+            this.initThinLineProgram();
+        }
+        get lines() {
+            return this._lines;
         }
         /**
          * updates and redraws the content of the plot
@@ -183,17 +229,17 @@
             const webgl = this.webgl;
             this.lines.forEach((line) => {
                 if (line.visible) {
-                    webgl.useProgram(line._prog);
-                    const uscale = webgl.getUniformLocation(line._prog, "uscale");
+                    webgl.useProgram(this.progThinLine);
+                    const uscale = webgl.getUniformLocation(this.progThinLine, "uscale");
                     webgl.uniformMatrix2fv(uscale, false, new Float32Array([
                         line.scaleX * this.gScaleX,
                         0,
                         0,
                         line.scaleY * this.gScaleY * this.gXYratio,
                     ]));
-                    const uoffset = webgl.getUniformLocation(line._prog, "uoffset");
+                    const uoffset = webgl.getUniformLocation(this.progThinLine, "uoffset");
                     webgl.uniform2fv(uoffset, new Float32Array([line.offsetX + this.gOffsetX, line.offsetY + this.gOffsetY]));
-                    const uColor = webgl.getUniformLocation(line._prog, "uColor");
+                    const uColor = webgl.getUniformLocation(this.progThinLine, "uColor");
                     webgl.uniform4fv(uColor, [line.color.r, line.color.g, line.color.b, line.color.a]);
                     webgl.bufferData(webgl.ARRAY_BUFFER, line.xy, webgl.STREAM_DRAW);
                     webgl.drawArrays(line.loop ? webgl.LINE_LOOP : webgl.LINE_STRIP, 0, line.webglNumPoints);
@@ -216,14 +262,21 @@
          * ```
          */
         addLine(line) {
+            //line.initProgram(this.webgl);
             line._vbuffer = this.webgl.createBuffer();
             this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, line._vbuffer);
             this.webgl.bufferData(this.webgl.ARRAY_BUFFER, line.xy, this.webgl.STREAM_DRAW);
+            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, line._vbuffer);
+            line._coord = this.webgl.getAttribLocation(this.progThinLine, "coordinates");
+            this.webgl.vertexAttribPointer(line._coord, 2, this.webgl.FLOAT, false, 0, 0);
+            this.webgl.enableVertexAttribArray(line._coord);
+            this.lines.push(line);
+        }
+        initThinLineProgram() {
             const vertCode = `
       attribute vec2 coordinates;
       uniform mat2 uscale;
       uniform vec2 uoffset;
-
       void main(void) {
          gl_Position = vec4(uscale*coordinates + uoffset, 0.0, 1.0);
       }`;
@@ -243,18 +296,22 @@
             const fragShader = this.webgl.createShader(this.webgl.FRAGMENT_SHADER);
             this.webgl.shaderSource(fragShader, fragCode);
             this.webgl.compileShader(fragShader);
-            line._prog = this.webgl.createProgram();
-            this.webgl.attachShader(line._prog, vertShader);
-            this.webgl.attachShader(line._prog, fragShader);
-            this.webgl.linkProgram(line._prog);
-            this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, line._vbuffer);
-            line._coord = this.webgl.getAttribLocation(line._prog, "coordinates");
-            this.webgl.vertexAttribPointer(line._coord, 2, this.webgl.FLOAT, false, 0, 0);
-            this.webgl.enableVertexAttribArray(line._coord);
-            this.lines.push(line);
+            this.progThinLine = this.webgl.createProgram();
+            this.webgl.attachShader(this.progThinLine, vertShader);
+            this.webgl.attachShader(this.progThinLine, fragShader);
+            this.webgl.linkProgram(this.progThinLine);
         }
-        removeLine(index) {
-            //to be implemented
+        /**
+         * remove the last line
+         */
+        popLine() {
+            this.lines.pop();
+        }
+        /**
+         * remove all the lines
+         */
+        removeAllLines() {
+            this._lines = [];
         }
         /**
          * Change the WbGL viewport
@@ -265,6 +322,11 @@
          */
         viewport(a, b, c, d) {
             this.webgl.viewport(a, b, c, d);
+        }
+        log(str) {
+            if (this.debug) {
+                console.log("[webgl-plot]:" + str);
+            }
         }
     }
 
@@ -338,7 +400,9 @@
                 this.dragEnd();
             });
             this.divMain.addEventListener("mouseleave", () => {
-                this.dragEnd();
+                if (this.active) {
+                    this.dragEnd();
+                }
             });
             this.divBarL.addEventListener("mousedown", (e) => {
                 if (this.enable) {
@@ -891,9 +955,12 @@
             lineVth.scaleY = 0.5;
         }
         function init() {
+            const canvas = document.getElementById("display");
             const devicePixelRatio = window.devicePixelRatio || 1;
-            N = Math.round(canv.clientWidth * devicePixelRatio);
-            wglp = new WebGLPlot(canv);
+            canvas.width = canvas.clientWidth * devicePixelRatio;
+            canvas.height = canvas.clientHeight * devicePixelRatio;
+            N = Math.round(canvas.width);
+            wglp = new WebGLPlot(canvas);
             wglp.clear();
             const color = new ColorRGBA(0, 1, 1, 1);
             lineY = new WebglLine(color, N);

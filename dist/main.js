@@ -212,9 +212,12 @@ import { SPAD } from "./spad";
         lineVth.scaleY = 0.5;
     }
     function init() {
+        const canvas = document.getElementById("display");
         const devicePixelRatio = window.devicePixelRatio || 1;
-        N = Math.round(canv.clientWidth * devicePixelRatio);
-        wglp = new WebGLplot(canv);
+        canvas.width = canvas.clientWidth * devicePixelRatio;
+        canvas.height = canvas.clientHeight * devicePixelRatio;
+        N = Math.round(canvas.width);
+        wglp = new WebGLplot(canvas);
         wglp.clear();
         const color = new ColorRGBA(0, 1, 1, 1);
         lineY = new WebglLine(color, N);

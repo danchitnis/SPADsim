@@ -261,10 +261,14 @@ import { SPAD } from "./spad";
   }
 
   function init(): void {
+    const canvas = document.getElementById("display") as HTMLCanvasElement;
     const devicePixelRatio = window.devicePixelRatio || 1;
-    N = Math.round(canv.clientWidth * devicePixelRatio);
+    canvas.width = canvas.clientWidth * devicePixelRatio;
+    canvas.height = canvas.clientHeight * devicePixelRatio;
 
-    wglp = new WebGLplot(canv);
+    N = Math.round(canvas.width);
+
+    wglp = new WebGLplot(canvas);
 
     wglp.clear();
 
