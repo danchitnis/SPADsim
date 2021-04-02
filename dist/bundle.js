@@ -27,6 +27,10 @@
             this._coord = 0;
             this.visible = true;
             this.intensity = 1;
+            this.xy = new Float32Array([]);
+            this.numPoints = 0;
+            this.color = new ColorRGBA(0, 0, 0, 1);
+            this.webglNumPoints = 0;
         }
     }
 
@@ -141,7 +145,7 @@
     /**
      * The main class for the webgl-plot library
      */
-    class WebGLPlot {
+    class WebglPlot {
         /**
          * Create a webgl-plot instance
          * @param canvas - the canvas in which the plot appears
@@ -151,7 +155,7 @@
          *
          * For HTMLCanvas
          * ```typescript
-         * const canvas = dcoument.getEelementbyId("canvas");
+         * const canvas = document.getElementbyId("canvas");
          *
          * const devicePixelRatio = window.devicePixelRatio || 1;
          * canvas.width = canvas.clientWidth * devicePixelRatio;
@@ -185,6 +189,7 @@
              * log debug output
              */
             this.debug = false;
+            this.addLine = this.addDataLine;
             if (options == undefined) {
                 this.webgl = canvas.getContext("webgl", {
                     antialias: true,
@@ -203,42 +208,55 @@
             }
             this.log("canvas type is: " + canvas.constructor.name);
             this.log(`[webgl-plot]:width=${canvas.width}, height=${canvas.height}`);
-            this._lines = [];
+            this._linesData = [];
+            this._linesAux = [];
+            this._surfaces = [];
             //this.webgl = webgl;
             this.gScaleX = 1;
             this.gScaleY = 1;
             this.gXYratio = 1;
             this.gOffsetX = 0;
             this.gOffsetY = 0;
-            // Enable the depth test
-            this.webgl.enable(this.webgl.DEPTH_TEST);
-            // Clear the color and depth buffer
-            this.webgl.clear(this.webgl.COLOR_BUFFER_BIT || this.webgl.DEPTH_BUFFER_BIT);
+            this.gLog10X = false;
+            this.gLog10Y = false;
+            // Clear the color
+            this.webgl.clear(this.webgl.COLOR_BUFFER_BIT);
             // Set the view port
             this.webgl.viewport(0, 0, canvas.width, canvas.height);
             this.progThinLine = this.webgl.createProgram();
             this.initThinLineProgram();
+            //https://learnopengl.com/Advanced-OpenGL/Blending
+            this.webgl.enable(this.webgl.BLEND);
+            this.webgl.blendFunc(this.webgl.SRC_ALPHA, this.webgl.ONE_MINUS_SRC_ALPHA);
         }
-        get lines() {
-            return this._lines;
+        get linesData() {
+            return this._linesData;
+        }
+        get linesAux() {
+            return this._linesAux;
+        }
+        get surfaces() {
+            return this._surfaces;
         }
         /**
          * updates and redraws the content of the plot
          */
-        update() {
+        updateLines(lines) {
             const webgl = this.webgl;
-            this.lines.forEach((line) => {
+            lines.forEach((line) => {
                 if (line.visible) {
                     webgl.useProgram(this.progThinLine);
                     const uscale = webgl.getUniformLocation(this.progThinLine, "uscale");
                     webgl.uniformMatrix2fv(uscale, false, new Float32Array([
-                        line.scaleX * this.gScaleX,
+                        line.scaleX * this.gScaleX * (this.gLog10X ? 1 / Math.log(10) : 1),
                         0,
                         0,
-                        line.scaleY * this.gScaleY * this.gXYratio,
+                        line.scaleY * this.gScaleY * this.gXYratio * (this.gLog10Y ? 1 / Math.log(10) : 1),
                     ]));
                     const uoffset = webgl.getUniformLocation(this.progThinLine, "uoffset");
                     webgl.uniform2fv(uoffset, new Float32Array([line.offsetX + this.gOffsetX, line.offsetY + this.gOffsetY]));
+                    const isLog = webgl.getUniformLocation(this.progThinLine, "is_log");
+                    webgl.uniform2iv(isLog, new Int32Array([this.gLog10X ? 1 : 0, this.gLog10Y ? 1 : 0]));
                     const uColor = webgl.getUniformLocation(this.progThinLine, "uColor");
                     webgl.uniform4fv(uColor, [line.color.r, line.color.g, line.color.b, line.color.a]);
                     webgl.bufferData(webgl.ARRAY_BUFFER, line.xy, webgl.STREAM_DRAW);
@@ -246,10 +264,38 @@
                 }
             });
         }
+        updateSurfaces(lines) {
+            const webgl = this.webgl;
+            lines.forEach((line) => {
+                if (line.visible) {
+                    webgl.useProgram(this.progThinLine);
+                    const uscale = webgl.getUniformLocation(this.progThinLine, "uscale");
+                    webgl.uniformMatrix2fv(uscale, false, new Float32Array([
+                        line.scaleX * this.gScaleX * (this.gLog10X ? 1 / Math.log(10) : 1),
+                        0,
+                        0,
+                        line.scaleY * this.gScaleY * this.gXYratio * (this.gLog10Y ? 1 / Math.log(10) : 1),
+                    ]));
+                    const uoffset = webgl.getUniformLocation(this.progThinLine, "uoffset");
+                    webgl.uniform2fv(uoffset, new Float32Array([line.offsetX + this.gOffsetX, line.offsetY + this.gOffsetY]));
+                    const isLog = webgl.getUniformLocation(this.progThinLine, "is_log");
+                    webgl.uniform2iv(isLog, new Int32Array([this.gLog10X ? 1 : 0, this.gLog10Y ? 1 : 0]));
+                    const uColor = webgl.getUniformLocation(this.progThinLine, "uColor");
+                    webgl.uniform4fv(uColor, [line.color.r, line.color.g, line.color.b, line.color.a]);
+                    webgl.bufferData(webgl.ARRAY_BUFFER, line.xy, webgl.STREAM_DRAW);
+                    webgl.drawArrays(webgl.TRIANGLE_STRIP, 0, line.webglNumPoints);
+                }
+            });
+        }
+        update() {
+            this.updateLines(this.linesData);
+            this.updateLines(this.linesAux);
+            this.updateSurfaces(this.surfaces);
+        }
         clear() {
             // Clear the canvas  //??????????????????
             //this.webgl.clearColor(0.1, 0.1, 0.1, 1.0);
-            this.webgl.clear(this.webgl.COLOR_BUFFER_BIT || this.webgl.DEPTH_BUFFER_BIT);
+            this.webgl.clear(this.webgl.COLOR_BUFFER_BIT);
         }
         /**
          * adds a line to the plot
@@ -261,7 +307,7 @@
          * wglp.addLine(line);
          * ```
          */
-        addLine(line) {
+        _addLine(line) {
             //line.initProgram(this.webgl);
             line._vbuffer = this.webgl.createBuffer();
             this.webgl.bindBuffer(this.webgl.ARRAY_BUFFER, line._vbuffer);
@@ -270,15 +316,31 @@
             line._coord = this.webgl.getAttribLocation(this.progThinLine, "coordinates");
             this.webgl.vertexAttribPointer(line._coord, 2, this.webgl.FLOAT, false, 0, 0);
             this.webgl.enableVertexAttribArray(line._coord);
-            this.lines.push(line);
+        }
+        addDataLine(line) {
+            this._addLine(line);
+            this.linesData.push(line);
+        }
+        addAuxLine(line) {
+            this._addLine(line);
+            this.linesAux.push(line);
+        }
+        addSurface(surface) {
+            this._addLine(surface);
+            this.surfaces.push(surface);
         }
         initThinLineProgram() {
             const vertCode = `
       attribute vec2 coordinates;
       uniform mat2 uscale;
       uniform vec2 uoffset;
+      uniform ivec2 is_log;
+
       void main(void) {
-         gl_Position = vec4(uscale*coordinates + uoffset, 0.0, 1.0);
+         float x = (is_log[0]==1) ? log(coordinates.x) : coordinates.x;
+         float y = (is_log[1]==1) ? log(coordinates.y) : coordinates.y;
+         vec2 line = vec2(x, y);
+         gl_Position = vec4(uscale*line + uoffset, 0.0, 1.0);
       }`;
             // Create a vertex shader object
             const vertShader = this.webgl.createShader(this.webgl.VERTEX_SHADER);
@@ -302,16 +364,29 @@
             this.webgl.linkProgram(this.progThinLine);
         }
         /**
-         * remove the last line
+         * remove the last data line
          */
-        popLine() {
-            this.lines.pop();
+        popDataLine() {
+            this.linesData.pop();
         }
         /**
          * remove all the lines
          */
         removeAllLines() {
-            this._lines = [];
+            this._linesData = [];
+            this._linesAux = [];
+        }
+        /**
+         * remove all data lines
+         */
+        removeDataLines() {
+            this._linesData = [];
+        }
+        /**
+         * remove all auxiliary lines
+         */
+        removeAuxLines() {
+            this._linesAux = [];
         }
         /**
          * Change the WbGL viewport
@@ -336,7 +411,7 @@
      * by Danial Chitnis
      * Feb 2020
      */
-    class SimpleSlider extends EventTarget {
+    class SimpleSlider {
         /**
          *
          * @param div - The id of the div which the slider is going to be placed
@@ -350,7 +425,6 @@
          * ```
          */
         constructor(div, min, max, n) {
-            super();
             this.sliderWidth = 0;
             this.handleOffset = 0;
             this.pxMin = 0;
@@ -431,7 +505,7 @@
         dragStart(x) {
             this.initialX = x - this.handlePos - this.handleOffset;
             this.active = true;
-            this.dispatchEvent(new CustomEvent("drag-start"));
+            this.callbackDragStart();
         }
         drag(e, x) {
             if (this.active) {
@@ -439,12 +513,12 @@
                 this.currentX = x - this.initialX;
                 this.translateN(this.currentX);
                 this.value = this.getPositionValue();
-                this.dispatchEvent(new CustomEvent("update"));
+                this.callBackUpdate();
             }
         }
         dragEnd() {
             this.active = false;
-            this.dispatchEvent(new CustomEvent("drag-end"));
+            this.callBackDragEnd();
         }
         /*-----------------------------------------------------------*/
         translateN(xPos) {
@@ -486,7 +560,7 @@
             const newPos = valRel * this.sliderWidth + 2 * this.handleOffset;
             this.translate(newPos);
             this.value = this.getPositionValue();
-            this.dispatchEvent(new CustomEvent("update"));
+            this.callBackUpdate();
         }
         init() {
             const divMainWidth = parseFloat(getComputedStyle(this.divMain).getPropertyValue("width"));
@@ -557,14 +631,6 @@
                 this.divMain.style.border = "none";
             }
         }
-        /**
-         *
-         * @param eventName
-         * @param listener
-         */
-        addEventListener(eventName, listener) {
-            super.addEventListener(eventName, listener);
-        }
         makeDivs(mainDiv) {
             this.divMain = document.getElementById(mainDiv);
             this.divMain.className = "simple-slider";
@@ -581,6 +647,9 @@
             this.divMain.append(this.divBarL);
             this.divMain.append(this.divBarR);
         }
+        callBackUpdate() { }
+        callbackDragStart() { }
+        callBackDragEnd() { }
     }
 
     /**
@@ -768,7 +837,6 @@
         let btSingle;
         let btCH1;
         let btCH2;
-        let canv;
         const scaleY = 0.9;
         const fpsDivder = 6;
         let fpsCounter = 0;
@@ -783,7 +851,7 @@
         function newFrame() {
             if (fpsCounter == 0) {
                 update(updateNewPh, updateCH1, updateCH2);
-                wglp.lines.forEach((line) => {
+                wglp.linesData.forEach((line) => {
                     //
                 });
                 wglp.clear();
@@ -797,34 +865,34 @@
             window.requestAnimationFrame(newFrame);
         }
         window.requestAnimationFrame(newFrame);
-        sliderTr.addEventListener("update", () => {
+        sliderTr.callBackUpdate = () => {
             tr = sliderTr.value / 10;
             displayTr.innerHTML = tr.toPrecision(2);
-        });
-        sliderPhrate.addEventListener("update", () => {
+        };
+        sliderPhrate.callBackUpdate = () => {
             phrate = sliderPhrate.value;
             displayPhrate.innerHTML = phrate.toPrecision(2);
             spad.generatePhoton(phrate);
-        });
-        sliderVth.addEventListener("update", () => {
+        };
+        sliderVth.callBackUpdate = () => {
             vth = sliderVth.value;
             displayVth.innerHTML = vth.toPrecision(2);
-        });
-        sliderTr.addEventListener("drag-start", sliderStart);
-        sliderTr.addEventListener("drag-end", sliderEnd);
-        sliderPhrate.addEventListener("drag-start", sliderStart);
-        sliderPhrate.addEventListener("drag-end", sliderEnd);
-        sliderVth.addEventListener("drag-start", () => {
+        };
+        sliderTr.callbackDragStart = sliderStart;
+        sliderTr.callBackDragEnd = sliderEnd;
+        sliderPhrate.callbackDragStart = sliderStart;
+        sliderPhrate.callBackDragEnd = sliderEnd;
+        sliderVth.callbackDragStart = () => {
             flagVth = true;
             if (runSingle) {
                 updateCH1 = false;
                 updateCH2 = true;
             }
-        });
-        sliderVth.addEventListener("drag-end", () => {
+        };
+        sliderVth.callBackDragEnd = () => {
             flagVth = false;
             sliderEnd();
-        });
+        };
         function sliderStart() {
             updateCH1 = true;
             updateCH2 = true;
@@ -960,7 +1028,7 @@
             canvas.width = canvas.clientWidth * devicePixelRatio;
             canvas.height = canvas.clientHeight * devicePixelRatio;
             N = Math.round(canvas.width);
-            wglp = new WebGLPlot(canvas);
+            wglp = new WebglPlot(canvas);
             wglp.clear();
             const color = new ColorRGBA(0, 1, 1, 1);
             lineY = new WebglLine(color, N);
@@ -977,7 +1045,6 @@
             wglp.addLine(lineVth);
         }
         function initUI() {
-            canv = document.getElementById("display");
             sliderTr = new SimpleSlider("slider_tr", 0.01, 1, 0);
             sliderPhrate = new SimpleSlider("slider_phrate", 0.1, 200, 0);
             sliderVth = new SimpleSlider("slider_vth", 0.01, 1, 0);
@@ -988,37 +1055,6 @@
             sliderPhrate.setValue(10);
             sliderVth.setValue(0.5);
             sliderVth.setEnable(false);
-            /*noUiSlider.create(sliderTr, {
-              start: [0.5],
-              connect: [true, false],
-              //tooltips: [false, wNumb({decimals: 1}), true],
-              range: {
-                min: 0.01,
-                max: 1
-              }
-            });
-        
-            noUiSlider.create(sliderPhrate, {
-              start: [10],
-              connect: [true, false],
-              //tooltips: [false, wNumb({decimals: 1}), true],
-              range: {
-                min: 0.1,
-                max: 200
-              }
-            });
-        
-            //slider_vth.style.visibility = "hidden";
-            sliderVth.setAttribute("disabled", "true");
-            noUiSlider.create(sliderVth, {
-              start: [0.5],
-              connect: [true, false],
-              //tooltips: [false, wNumb({decimals: 1}), true],
-              range: {
-                min: 0.01,
-                max: 1
-              }
-            });*/
             btRun = document.getElementById("bt-run");
             btSingle = document.getElementById("bt-single");
             btCH1 = document.getElementById("btCH1");

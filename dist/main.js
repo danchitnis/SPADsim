@@ -1,5 +1,5 @@
 /* eslint-disable no-inner-declarations */
-import WebGLplot, { ColorRGBA, WebglLine } from "webgl-plot";
+import { WebglPlot, ColorRGBA, WebglLine } from "webgl-plot";
 import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";
 {
@@ -25,7 +25,6 @@ import { SPAD } from "./spad";
     let btSingle;
     let btCH1;
     let btCH2;
-    let canv;
     const scaleY = 0.9;
     const fpsDivder = 6;
     let fpsCounter = 0;
@@ -40,7 +39,7 @@ import { SPAD } from "./spad";
     function newFrame() {
         if (fpsCounter == 0) {
             update(updateNewPh, updateCH1, updateCH2);
-            wglp.lines.forEach((line) => {
+            wglp.linesData.forEach((line) => {
                 //
             });
             wglp.clear();
@@ -54,34 +53,34 @@ import { SPAD } from "./spad";
         window.requestAnimationFrame(newFrame);
     }
     window.requestAnimationFrame(newFrame);
-    sliderTr.addEventListener("update", () => {
+    sliderTr.callBackUpdate = () => {
         tr = sliderTr.value / 10;
         displayTr.innerHTML = tr.toPrecision(2);
-    });
-    sliderPhrate.addEventListener("update", () => {
+    };
+    sliderPhrate.callBackUpdate = () => {
         phrate = sliderPhrate.value;
         displayPhrate.innerHTML = phrate.toPrecision(2);
         spad.generatePhoton(phrate);
-    });
-    sliderVth.addEventListener("update", () => {
+    };
+    sliderVth.callBackUpdate = () => {
         vth = sliderVth.value;
         displayVth.innerHTML = vth.toPrecision(2);
-    });
-    sliderTr.addEventListener("drag-start", sliderStart);
-    sliderTr.addEventListener("drag-end", sliderEnd);
-    sliderPhrate.addEventListener("drag-start", sliderStart);
-    sliderPhrate.addEventListener("drag-end", sliderEnd);
-    sliderVth.addEventListener("drag-start", () => {
+    };
+    sliderTr.callbackDragStart = sliderStart;
+    sliderTr.callBackDragEnd = sliderEnd;
+    sliderPhrate.callbackDragStart = sliderStart;
+    sliderPhrate.callBackDragEnd = sliderEnd;
+    sliderVth.callbackDragStart = () => {
         flagVth = true;
         if (runSingle) {
             updateCH1 = false;
             updateCH2 = true;
         }
-    });
-    sliderVth.addEventListener("drag-end", () => {
+    };
+    sliderVth.callBackDragEnd = () => {
         flagVth = false;
         sliderEnd();
-    });
+    };
     function sliderStart() {
         updateCH1 = true;
         updateCH2 = true;
@@ -217,7 +216,7 @@ import { SPAD } from "./spad";
         canvas.width = canvas.clientWidth * devicePixelRatio;
         canvas.height = canvas.clientHeight * devicePixelRatio;
         N = Math.round(canvas.width);
-        wglp = new WebGLplot(canvas);
+        wglp = new WebglPlot(canvas);
         wglp.clear();
         const color = new ColorRGBA(0, 1, 1, 1);
         lineY = new WebglLine(color, N);
@@ -234,7 +233,6 @@ import { SPAD } from "./spad";
         wglp.addLine(lineVth);
     }
     function initUI() {
-        canv = document.getElementById("display");
         sliderTr = new SimpleSlider("slider_tr", 0.01, 1, 0);
         sliderPhrate = new SimpleSlider("slider_phrate", 0.1, 200, 0);
         sliderVth = new SimpleSlider("slider_vth", 0.01, 1, 0);
@@ -245,37 +243,6 @@ import { SPAD } from "./spad";
         sliderPhrate.setValue(10);
         sliderVth.setValue(0.5);
         sliderVth.setEnable(false);
-        /*noUiSlider.create(sliderTr, {
-          start: [0.5],
-          connect: [true, false],
-          //tooltips: [false, wNumb({decimals: 1}), true],
-          range: {
-            min: 0.01,
-            max: 1
-          }
-        });
-    
-        noUiSlider.create(sliderPhrate, {
-          start: [10],
-          connect: [true, false],
-          //tooltips: [false, wNumb({decimals: 1}), true],
-          range: {
-            min: 0.1,
-            max: 200
-          }
-        });
-    
-        //slider_vth.style.visibility = "hidden";
-        sliderVth.setAttribute("disabled", "true");
-        noUiSlider.create(sliderVth, {
-          start: [0.5],
-          connect: [true, false],
-          //tooltips: [false, wNumb({decimals: 1}), true],
-          range: {
-            min: 0.01,
-            max: 1
-          }
-        });*/
         btRun = document.getElementById("bt-run");
         btSingle = document.getElementById("bt-single");
         btCH1 = document.getElementById("btCH1");

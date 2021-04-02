@@ -1,5 +1,5 @@
 /* eslint-disable no-inner-declarations */
-import WebGLplot, { ColorRGBA, WebglLine } from "webgl-plot";
+import { WebglPlot, ColorRGBA, WebglLine } from "webgl-plot";
 import { SimpleSlider } from "@danchitnis/simple-slider";
 import { SPAD } from "./spad";
 
@@ -34,14 +34,12 @@ import { SPAD } from "./spad";
   let btCH1: HTMLButtonElement;
   let btCH2: HTMLButtonElement;
 
-  let canv: HTMLCanvasElement;
-
   const scaleY = 0.9;
 
   const fpsDivder = 6;
   let fpsCounter = 0;
 
-  let wglp: WebGLplot;
+  let wglp: WebglPlot;
 
   let lineY: WebglLine;
   let lineYsq: WebglLine;
@@ -57,7 +55,7 @@ import { SPAD } from "./spad";
   function newFrame(): void {
     if (fpsCounter == 0) {
       update(updateNewPh, updateCH1, updateCH2);
-      wglp.lines.forEach((line) => {
+      wglp.linesData.forEach((line) => {
         //
       });
 
@@ -78,40 +76,40 @@ import { SPAD } from "./spad";
 
   window.requestAnimationFrame(newFrame);
 
-  sliderTr.addEventListener("update", () => {
+  sliderTr.callBackUpdate = () => {
     tr = sliderTr.value / 10;
     displayTr.innerHTML = tr.toPrecision(2);
-  });
+  };
 
-  sliderPhrate.addEventListener("update", () => {
+  sliderPhrate.callBackUpdate = () => {
     phrate = sliderPhrate.value;
     displayPhrate.innerHTML = phrate.toPrecision(2);
     spad.generatePhoton(phrate);
-  });
+  };
 
-  sliderVth.addEventListener("update", () => {
+  sliderVth.callBackUpdate = () => {
     vth = sliderVth.value;
     displayVth.innerHTML = vth.toPrecision(2);
-  });
+  };
 
-  sliderTr.addEventListener("drag-start", sliderStart);
-  sliderTr.addEventListener("drag-end", sliderEnd);
+  sliderTr.callbackDragStart = sliderStart;
+  sliderTr.callBackDragEnd = sliderEnd;
 
-  sliderPhrate.addEventListener("drag-start", sliderStart);
-  sliderPhrate.addEventListener("drag-end", sliderEnd);
+  sliderPhrate.callbackDragStart = sliderStart;
+  sliderPhrate.callBackDragEnd = sliderEnd;
 
-  sliderVth.addEventListener("drag-start", () => {
+  sliderVth.callbackDragStart = () => {
     flagVth = true;
     if (runSingle) {
       updateCH1 = false;
       updateCH2 = true;
     }
-  });
+  };
 
-  sliderVth.addEventListener("drag-end", () => {
+  sliderVth.callBackDragEnd = () => {
     flagVth = false;
     sliderEnd();
-  });
+  };
 
   function sliderStart(): void {
     updateCH1 = true;
@@ -268,7 +266,7 @@ import { SPAD } from "./spad";
 
     N = Math.round(canvas.width);
 
-    wglp = new WebGLplot(canvas);
+    wglp = new WebglPlot(canvas);
 
     wglp.clear();
 
@@ -290,8 +288,6 @@ import { SPAD } from "./spad";
   }
 
   function initUI(): void {
-    canv = document.getElementById("display") as HTMLCanvasElement;
-
     sliderTr = new SimpleSlider("slider_tr", 0.01, 1, 0);
     sliderPhrate = new SimpleSlider("slider_phrate", 0.1, 200, 0);
     sliderVth = new SimpleSlider("slider_vth", 0.01, 1, 0);
@@ -305,38 +301,6 @@ import { SPAD } from "./spad";
 
     sliderVth.setValue(0.5);
     sliderVth.setEnable(false);
-
-    /*noUiSlider.create(sliderTr, {
-      start: [0.5],
-      connect: [true, false],
-      //tooltips: [false, wNumb({decimals: 1}), true],
-      range: {
-        min: 0.01,
-        max: 1
-      }
-    });
-
-    noUiSlider.create(sliderPhrate, {
-      start: [10],
-      connect: [true, false],
-      //tooltips: [false, wNumb({decimals: 1}), true],
-      range: {
-        min: 0.1,
-        max: 200
-      }
-    });
-
-    //slider_vth.style.visibility = "hidden";
-    sliderVth.setAttribute("disabled", "true");
-    noUiSlider.create(sliderVth, {
-      start: [0.5],
-      connect: [true, false],
-      //tooltips: [false, wNumb({decimals: 1}), true],
-      range: {
-        min: 0.01,
-        max: 1
-      }
-    });*/
 
     btRun = document.getElementById("bt-run") as HTMLButtonElement;
     btSingle = document.getElementById("bt-single") as HTMLButtonElement;
