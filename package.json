@@ -5,15 +5,15 @@
   "main": "index.js",
   "dependencies": {
     "@danchitnis/simple-slider": "^0.2.0",
-    "webgl-plot": "^0.6.1"
+    "webgl-plot": "^0.6.5"
   },
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^11.2.1",
-    "@typescript-eslint/eslint-plugin": "^4.20.0",
-    "@typescript-eslint/parser": "^4.20.0",
-    "eslint": "^7.23.0",
-    "rollup": "^2.44.0",
-    "typescript": "^4.2.3"
+    "@rollup/plugin-node-resolve": "^13.0.6",
+    "@typescript-eslint/eslint-plugin": "^5.5.0",
+    "@typescript-eslint/parser": "^5.5.0",
+    "eslint": "^8.4.0",
+    "rollup": "^2.60.2",
+    "typescript": "^4.5.2"
   },
   "scripts": {
     "build": "tsc && rollup -c"
